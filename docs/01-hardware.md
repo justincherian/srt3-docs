@@ -2,7 +2,7 @@
 
 ## Cluster nodes
 
-Three Lenovo ThinkCentre M920q tiny PCs run Proxmox VE 8 on Debian. Each has a Mellanox ConnectX-3 CX312B dual-port 10GbE NIC.
+Three Lenovo ThinkCentre M920q tiny PCs run Proxmox VE 8 on Debian and are joined in a single **3-node Proxmox cluster** (quorum 2). Each has a Mellanox ConnectX-3 CX312B dual-port 10GbE NIC.
 
 | Node | RAM | LAN IP | Role | Why |
 | --- | --- | --- | --- | --- |
@@ -28,8 +28,8 @@ Ryzenous is deliberately **not** a Proxmox cluster member. It joins jobs as a GP
 | Device | Role |
 | --- | --- |
 | AT&T fiber gateway | Upstream ISP |
-| GL.iNet Flint 2 | Router (192.168.8.1), DHCP, Tailscale |
-| NicGiga S25-0802P | 1G PoE switch; carries all 1G cluster links and powers the CRS305 |
+| GL.iNet Flint 2 | Router (192.168.8.1), DHCP, Tailscale; Ryzenous's 1G link plugs in here |
+| NicGiga S25-0802P | 1G PoE switch; carries the three nodes' 1G links and powers the CRS305 |
 | MikroTik CRS305-1G-4S+ | 10G SFP+ switch for the cluster fabric |
 
 ## Power

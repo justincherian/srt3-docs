@@ -1,6 +1,6 @@
 # SRT3 Homelab
 
-A three-node mini-PC cluster with a 10G fabric and a remote GPU desktop. It's built to develop skills in distributed systems, HPC networking and AI inference, and to run real services day to day.
+A three-node Proxmox cluster of mini PCs with a 10G fabric and a remote GPU desktop. It's built to develop skills in distributed systems, HPC networking and AI inference, and to run real services day to day.
 
 ![SRT3 topology](assets/topology.svg)
 
@@ -44,3 +44,7 @@ A three-node mini-PC cluster with a 10G fabric and a remote GPU desktop. It's bu
 - **No secrets in this repo.** Keys, tokens, kubeconfigs and passwords stay on the hosts. CI runs gitleaks on every push.
 - **IP addresses are LAN-only (`192.168.8.0/24`, `10.10.10.0/24`).** They're documented because the repo is private. Scrub them before making it public.
 - **Diagrams:** the topology is a hand-written SVG in `assets/`. Flow diagrams are Mermaid, which GitHub renders inline, so you can edit them as text.
+
+## Keeping it current
+
+This repo is updated as the lab changes. Each new build phase gets its own `docs/NN-topic.md`, an entry in the [timeline](docs/timeline.md), and an updated row in the [roadmap](docs/roadmap.md). The topology SVG changes whenever the hardware or network does. See [CLAUDE.md](CLAUDE.md) for the conventions.

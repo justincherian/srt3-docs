@@ -20,7 +20,7 @@
   <rect class="bg" width="1000" height="700"/>
 
   <text class="h" x="30" y="34" font-size="20">SRT3 homelab topology</text>
-  <text class="m" x="30" y="54">LAN 192.168.8.0/24 · 10G storage/compute fabric 10.10.10.0/24 · MTU 9000</text>
+  <text class="m" x="30" y="54">3-node Proxmox cluster (Viper · Hellcat · Demon) · LAN 192.168.8.0/24 · 10G fabric 10.10.10.0/24 · MTU 9000</text>
 
   <!-- top row: internet path -->
   <rect class="box" x="30" y="80" width="150" height="50" rx="8"/>
@@ -47,7 +47,7 @@
   <path class="l1" d="M140 250 V232 H360 V214"/>
   <path class="l1" d="M380 250 V214"/>
   <path class="l1" d="M620 250 V232 H460 V214"/>
-  <path class="l1" d="M860 250 V232 H700 V214"/>
+  <path class="l1" d="M610 130 V150 H900 V250"/>
   
 
   <!-- nodes -->

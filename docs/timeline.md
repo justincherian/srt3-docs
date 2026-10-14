@@ -2,7 +2,7 @@
 
 The order things were built in. Most of it happened in October 2026.
 
-1. **Hardware.** Three M920q nodes running Proxmox, CX312B NICs, and a CRS305. Each node was given a role: Viper for AI, Hellcat always-on, Demon for media.
+1. **Hardware.** Three M920q nodes running Proxmox, joined into one 3-node cluster, CX312B NICs, and a CRS305. Each node was given a role: Viper for AI, Hellcat always-on, Demon for media.
 2. **10G fabric.** Fixed Viper's NIC (the `mlx4_en` blacklist), set MTU 9000 end to end, reached 9.91 Gbit/s.
 3. **RDMA.** A full stack on ConnectX-3: ~1006 MiB/s at ~2.73 µs.
 4. **Open WebUI on Viper.** A multi-LLM chat frontend at `.211:3000`.
