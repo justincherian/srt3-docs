@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <style>
+    :root { --bg:#ffffff; --fg:#1f2328; --muted:#59636e; --box:#f6f8fa; --stroke:#d1d9e0; --ten:#0969da; --one:#8c959f; --accent:#cf222e; --svc:#ffffff; }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --box:#161b22; --stroke:#3d444d; --ten:#4493f8; --one:#6e7681; --accent:#ff7b72; --svc:#0d1117; }
+    }
+    .bg { fill: var(--bg); }
+    .box { fill: var(--box); stroke: var(--stroke); stroke-width: 1.5; }
+    .svc { fill: var(--svc); stroke: var(--stroke); stroke-width: 1; }
+    .t { fill: var(--fg); font-size: 13px; }
+    .h { fill: var(--fg); font-size: 16px; font-weight: 700; }
+    .m { fill: var(--muted); font-size: 12px; }
+    .s { fill: var(--fg); font-size: 12px; }
+    .acc { fill: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: .06em; }
+    .l10 { stroke: var(--ten); stroke-width: 4; fill: none; }
+    .l1 { stroke: var(--one); stroke-width: 2; fill: none; }
+    .wifi { stroke: var(--one); stroke-width: 2; stroke-dasharray: 5 5; fill: none; }
+    .lbl10 { fill: var(--ten); font-size: 12px; font-weight: 600; }
+  </style>
+  <rect class="bg" width="1000" height="700"/>
+
+  <text class="h" x="30" y="34" font-size="20">SRT3 homelab topology</text>
+  <text class="m" x="30" y="54">LAN 192.168.8.0/24 · 10G storage/compute fabric 10.10.10.0/24 · MTU 9000</text>
+
+  <!-- top row: internet path -->
+  <rect class="box" x="30" y="80" width="150" height="50" rx="8"/>
+  <text class="t" x="105" y="110" text-anchor="middle">Internet</text>
+  <rect class="box" x="220" y="80" width="170" height="50" rx="8"/>
+  <text class="t" x="305" y="103" text-anchor="middle">AT&amp;T fiber gateway</text>
+  <text class="m" x="305" y="120" text-anchor="middle">upstream</text>
+  <rect class="box" x="430" y="80" width="200" height="50" rx="8"/>
+  <text class="t" x="530" y="102" text-anchor="middle">GL.iNet Flint 2 · .1</text>
+  <text class="m" x="530" y="120" text-anchor="middle">router · Tailscale</text>
+  <rect class="box" x="700" y="80" width="270" height="50" rx="8"/>
+  <text class="t" x="835" y="102" text-anchor="middle">MacBook Pro · iPhone · IoT</text>
+  <text class="m" x="835" y="120" text-anchor="middle">Wi-Fi · rekordbox + DDJ-400</text>
+  <path class="l1" d="M180 105 H220"/>
+  <path class="l1" d="M390 105 H430"/>
+  <path class="wifi" d="M630 105 H700"/>
+
+  <!-- 1G switch -->
+  <rect class="box" x="300" y="170" width="460" height="44" rx="8"/>
+  <text class="t" x="530" y="197" text-anchor="middle">NicGiga S25-0802P · 1G PoE switch (all 1G cluster links)</text>
+  <path class="l1" d="M530 130 V170"/>
+
+  <!-- 1G drops -->
+  <path class="l1" d="M140 250 V232 H360 V214"/>
+  <path class="l1" d="M380 250 V214"/>
+  <path class="l1" d="M620 250 V232 H460 V214"/>
+  <path class="l1" d="M860 250 V232 H700 V214"/>
+  
+
+  <!-- nodes -->
+  <!-- Viper -->
+  <rect class="box" x="30" y="250" width="220" height="250" rx="10"/>
+  <text class="acc" x="46" y="274">AI NODE</text>
+  <text class="h" x="46" y="296">Viper</text>
+  <text class="m" x="46" y="316">192.168.8.210 · Proxmox</text>
+  <text class="s" x="46" y="338">Lenovo M920q · 64 GB</text>
+  <text class="s" x="46" y="356">CX312B 10GbE · RDMA</text>
+  <rect class="svc" x="46" y="374" width="188" height="50" rx="6"/>
+  <text class="s" x="58" y="395">Open WebUI</text>
+  <text class="m" x="58" y="413">.211:3000 · multi-LLM</text>
+  <rect class="svc" x="46" y="432" width="188" height="50" rx="6"/>
+  <text class="s" x="58" y="453">llama.cpp RPC host</text>
+  <text class="m" x="58" y="471">in progress</text>
+
+  <!-- Hellcat -->
+  <rect class="box" x="270" y="250" width="220" height="250" rx="10"/>
+  <text class="acc" x="286" y="274">ALWAYS-ON</text>
+  <text class="h" x="286" y="296">Hellcat</text>
+  <text class="m" x="286" y="316">192.168.8.220 · Proxmox</text>
+  <text class="s" x="286" y="338">Lenovo M920q · 16 GB</text>
+  <text class="s" x="286" y="356">CX312B 10GbE</text>
+  <rect class="svc" x="286" y="374" width="188" height="108" rx="6"/>
+  <text class="s" x="298" y="395">Home Assistant (HAOS VM)</text>
+  <text class="m" x="298" y="413">.221:8123</text>
+  <text class="m" x="298" y="433">Claudey dashboard (GitOps)</text>
+  <text class="m" x="298" y="451">Homelable network map</text>
+  <text class="m" x="298" y="469">HS300 power metering</text>
+
+  <!-- Demon -->
+  <rect class="box" x="510" y="250" width="220" height="250" rx="10"/>
+  <text class="acc" x="526" y="274">MEDIA</text>
+  <text class="h" x="526" y="296">Demon</text>
+  <text class="m" x="526" y="316">.230 · 10.10.10.230</text>
+  <text class="s" x="526" y="338">Lenovo M920q · 16 GB</text>
+  <text class="s" x="526" y="356">256 GB NVMe · CX312B</text>
+  <rect class="svc" x="526" y="374" width="188" height="108" rx="6"/>
+  <text class="s" x="538" y="395">Demoncrates (LXC 101)</text>
+  <text class="m" x="538" y="413">.231 · app :8090</text>
+  <text class="m" x="538" y="433">puller · ingest · API/UI</text>
+  <text class="m" x="538" y="451">Navidrome · Syncthing</text>
+  <text class="m" x="538" y="469">Grafana · SQLite</text>
+
+  <!-- Ryzenous -->
+  <rect class="box" x="750" y="250" width="220" height="250" rx="10"/>
+  <text class="acc" x="766" y="274">GPU + STORAGE</text>
+  <text class="h" x="766" y="296">Ryzenous</text>
+  <text class="m" x="766" y="316">.101 · Windows 11 · external</text>
+  <text class="s" x="766" y="338">Ryzen 9 5900X · 64 GB</text>
+  <text class="s" x="766" y="356">RTX 3070 8 GB · WoL</text>
+  <rect class="svc" x="766" y="374" width="188" height="108" rx="6"/>
+  <text class="s" x="778" y="395">E:\srt3-music (SMB)</text>
+  <text class="m" x="778" y="413">WSL2 GPU worker:</text>
+  <text class="m" x="778" y="431">Demucs stems · CLAP</text>
+  <text class="m" x="778" y="451">Ollama (native)</text>
+  <text class="m" x="778" y="469">llama.cpp CUDA+RPC (WIP)</text>
+
+  <!-- 10G fabric -->
+  <path class="l10" d="M140 500 V560"/>
+  <path class="l10" d="M380 500 V560"/>
+  <path class="l10" d="M620 500 V560"/>
+  <path class="l10" d="M860 500 V560"/>
+  <rect class="box" x="30" y="560" width="940" height="56" rx="10" style="stroke: var(--ten); stroke-width: 2"/>
+  <text class="t" x="500" y="584" text-anchor="middle" font-weight="700">MikroTik CRS305 · 4× SFP+ 10G switch</text>
+  <text class="m" x="500" y="603" text-anchor="middle">PoE-powered from the NicGiga · Mellanox CX312B in each node</text>
+
+  <!-- legend -->
+  <path class="l10" d="M30 650 H70"/><text class="m" x="80" y="654">10G · MTU 9000 · iperf3 9.91 Gb/s · RDMA 2.73 µs</text>
+  <path class="l1" d="M440 650 H480"/><text class="m" x="490" y="654">1G LAN</text>
+  <path class="wifi" d="M570 650 H610"/><text class="m" x="620" y="654">Wi-Fi / Tailscale remote access</text>
+</svg>

@@ -1,0 +1,9 @@
+# Never commit credentials
+*.key
+*.pem
+id_*
+kubeconfig
+talosconfig
+.env
+secrets/
+.DS_Store
