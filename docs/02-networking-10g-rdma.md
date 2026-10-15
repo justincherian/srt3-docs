@@ -59,7 +59,7 @@ xychart-beta
 
 - **Tailscale** runs on the Flint 2, so the phone and MacBook reach Home Assistant, Demoncrates and Open WebUI from anywhere.
 - Early in the build, a firewall rule blocked Demon from reaching the internet.
-- Ryzenous has a scoped SSH key into Demon, which allows deploys and log pulls without manual `.bat` runs.
+- Ryzenous has a scoped SSH key into the Demoncrates LXC (deploys and log pulls without manual `.bat` runs), plus key-based root SSH to Demon's Proxmox host for host-level work such as mounts and benchmarks.
 
 ## Lessons
 
