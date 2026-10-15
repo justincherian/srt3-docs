@@ -46,7 +46,7 @@ xychart-beta
 - **1G is saturated.** 118 MB/s is about 94% of the 125 MB/s line rate, the practical ceiling.
 - **10G reads reach ~1 GB/s,** about 80% of line rate. That's in line with the RDMA result (~1006 MiB/s), so SMB with 4 MB rsize/wsize is efficient here.
 - **10G writes stop at 724 MB/s,** below reads on the same link, so the write limit is on the Ryzenous side (`E:` write speed or the SMB write path), not the network.
-- **Real impact:** a 1,000-track library with stems (~150 GB) takes about **2.5 min per 100 GB to read over 10G versus ~14 min over 1G**. A full write takes about **3.5 min instead of ~23 min** per 150 GB.
+- **Real impact:** a 1,000-track library with stems (~150 GB) takes about **1.7 min per 100 GB to read over 10G versus ~14 min over 1G**. A full write takes about **3.5 min instead of ~23 min** per 150 GB.
 - dd prints GB/s above 999 MB/s and rounds to 1.0, so the 10G read average is a lower bound.
 
 ## Addressing
