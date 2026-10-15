@@ -13,3 +13,4 @@ The order things were built in. Most of it happened in October 2026.
 9. **Home Assistant GitOps.** The `srt3-homeassistant` repo with the Git pull add-on, the Claudey dashboard, HS300 power and cost sensors, and Wake-on-LAN for Ryzenous.
 10. **Homelable.** A 27-node network map inside HA.
 11. **This repo.** Documentation and diagrams.
+12. **Storage path verified and benchmarked.** Confirmed the library share mounts over 10G (`10.10.10.100`). Measured the same share over 1G and 10G: read 118 → ~980 MB/s, write 111 → 724 MB/s.

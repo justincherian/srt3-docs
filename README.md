@@ -25,6 +25,7 @@ A three-node Proxmox cluster of mini PCs with a 10G fabric and a remote GPU desk
 | TCP throughput over 10G (iperf3, MTU 9000) | **9.91 Gbit/s** |
 | RDMA bandwidth | **~1006 MiB/s** |
 | RDMA latency | **~2.73 µs** |
+| SMB library share, 1G → 10G | read **118 → ~980 MB/s** (8.3×), write **111 → 724 MB/s** (6.5×) |
 | Demoncrates library | ~170 tracks across 6 crates |
 
 ## Docs

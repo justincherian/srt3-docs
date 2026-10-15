@@ -40,7 +40,7 @@ flowchart LR
 
 | Component | Host | Notes |
 | --- | --- | --- |
-| Library audio | Ryzenous `E:\srt3-music` | SMB → CIFS automount on the Proxmox host → bind mount into the LXC at `/srv/music` |
+| Library audio | Ryzenous `E:\srt3-music` | SMB over **10G** (`//10.10.10.100/srt3`) → CIFS automount (fstab, `x-systemd.automount`) on Demon's Proxmox host at `/mnt/srt3-library` → bind mount into the LXC at `/srv/music`. Measured ~980 MB/s read, 724 MB/s write |
 | SQLite DB | Demon local disk | Kept off SMB, because WAL locking over SMB risks corruption |
 | GPU worker | Ryzenous (Docker in WSL2) | Demucs stem separation, CLAP audio embeddings |
 | LLM | Ryzenous (native Ollama) | Reached over the LAN IP from the LXC |

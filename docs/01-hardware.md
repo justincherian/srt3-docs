@@ -19,9 +19,10 @@ Three Lenovo ThinkCentre M920q tiny PCs run Proxmox VE 8 on Debian and are joine
 | GPU | NVIDIA RTX 3070 (8 GB) |
 | OS | Windows 11 + WSL2 (Ubuntu 24.04, NVIDIA container toolkit) |
 | LAN IP | 192.168.8.101 (Wake-on-LAN enabled) |
+| 10G IP | 10.10.10.100 |
 | Storage | `E:` is the AI/data drive; the music library lives at `E:\srt3-music` |
 
-Ryzenous is deliberately **not** a Proxmox cluster member. It joins jobs as a GPU and storage target over the 10G link: SMB for the music library, the WSL2 GPU worker for Demucs/CLAP, and llama.cpp RPC for inference.
+Ryzenous is deliberately **not** a Proxmox cluster member. It joins jobs as a GPU and storage target over the 10G link: SMB for the music library (measured ~980 MB/s read, 724 MB/s write), the WSL2 GPU worker for Demucs/CLAP, and llama.cpp RPC for inference.
 
 ## Network gear
 
