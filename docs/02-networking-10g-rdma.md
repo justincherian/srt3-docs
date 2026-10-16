@@ -67,3 +67,24 @@ xychart-beta
 - Jumbo frames only help if **every hop** is set to MTU 9000: both NICs and the switch.
 - An LXC on Proxmox doesn't automatically see the 10G network. Bulk storage still goes over 10G, because the **host** mounts the SMB share via `10.10.10.100` and bind-mounts it into the LXC. Ollama calls from the LXC use the 1G LAN IP, which is fine: prompts and tokens are KB-scale, so the network adds <1% to response time.
 - To compare network paths, mount the same share twice (once per IP) with identical options. That isolates the link from disk and protocol effects.
+
+## IoT network (Flint 2)
+
+The router's built-in IoT network (`br-iot`, Wi-Fi `currynet-iot`, 2.4 GHz) is a separate subnet, `192.168.10.0/24`. Firewall:
+
+- **IoT → LAN:** blocked. IoT devices get DHCP, DNS (AdGuard) and internet only.
+- **LAN → IoT:** blocked, except **Home Assistant `192.168.8.221`** (full access) and **Hellcat `192.168.8.220`** (ping only, for monitoring). Rules `SRT3-HomeAssistant-to-IoT` and `SRT3-Hellcat-ping-IoT`.
+- The NicGiga S25-0802P is unmanaged (no VLANs), so wired devices behind it stay on the main LAN.
+
+**Address plan:**
+
+| Range | Category | Assigned |
+| --- | --- | --- |
+| `.10–.19` | Power (plugs, strips) | HS300 `.10` |
+| `.20–.29` | Climate / sensors | ecobee `.20` |
+| `.30–.39` | Lighting | KL60 bulb `.30` |
+| `.40–.49` | Media | reserved (TV and soundbar stay on main LAN for AirPlay) |
+| `.50–.59` | Cameras / security | reserved |
+| `.100–.249` | DHCP pool | anything here hasn't been catalogued yet |
+
+Router script with backup and undo: [`config/router/router-iot.sh`](../config/router/router-iot.sh).
