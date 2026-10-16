@@ -1,0 +1,91 @@
+# Recording rules: precompute the expensive queries every 30s so dashboards
+# read one cheap, clean series per host instead of re-crunching raw counters
+# on every refresh. Linux and Windows hosts land in the same srt3:* names.
+groups:
+- name: srt3-hosts
+  interval: 30s
+  rules:
+  - record: srt3:cpu_busy:ratio
+    expr: |-
+      (1 - avg by (node) (rate(node_cpu_seconds_total{mode="idle"}[2m])))
+        or
+      (1 - avg by (node) (rate(windows_cpu_time_total{mode="idle"}[2m])))
+  - record: srt3:mem_used:ratio
+    expr: |-
+      (max by (node) (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes))
+        or
+      (max by (node) (1 - windows_memory_available_bytes / windows_memory_physical_total_bytes))
+  - record: srt3:mem_used:bytes
+    expr: |-
+      (max by (node) (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes))
+        or
+      (max by (node) (windows_memory_physical_total_bytes - windows_memory_available_bytes))
+  - record: srt3:root_disk_used:ratio
+    expr: |-
+      (max by (node) (1 - node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}))
+        or
+      (max by (node) (1 - windows_logical_disk_free_bytes{volume="C:"} / windows_logical_disk_size_bytes{volume="C:"}))
+  - record: srt3:uptime:seconds
+    expr: |-
+      (max by (node) (time() - node_boot_time_seconds))
+        or
+      (max by (node) (time() - {__name__=~"windows_system_boot_time_timestamp(_seconds)?"}))
+  - record: srt3:temp_max:celsius
+    expr: max by (node) (node_hwmon_temp_celsius)
+  - record: srt3:load_per_core:ratio
+    expr: max by (node) (node_load5) / count by (node) (node_cpu_seconds_total{mode="idle"})
+  - record: srt3:disk_io:bytes_per_second
+    expr: |-
+      (sum by (node) (rate(node_disk_read_bytes_total{device!~"zd.*|dm-.*|loop.*|sr.*"}[2m]) + rate(node_disk_written_bytes_total{device!~"zd.*|dm-.*|loop.*|sr.*"}[2m])))
+        or
+      (sum by (node) (rate(windows_physical_disk_read_bytes_total[2m]) + rate(windows_physical_disk_write_bytes_total[2m])))
+- name: srt3-network
+  interval: 30s
+  rules:
+  - record: srt3:nic_rx:bps
+    expr: |-
+      (sum by (node, device) (rate(node_network_receive_bytes_total{job="node"}[1m])) * 8 and on (node, device) (node_network_up{job="node"} == 1))
+        or
+      (sum by (node, device) (label_replace(rate(windows_net_bytes_received_total{nic!~"(?i).*(isatap|loopback|teredo|vethernet|miniport|tailscale|bluetooth|wi-fi direct|virtual).*"}[1m]), "device", "$1", "nic", "(.*)")) * 8)
+  - record: srt3:nic_tx:bps
+    expr: |-
+      (sum by (node, device) (rate(node_network_transmit_bytes_total{job="node"}[1m])) * 8 and on (node, device) (node_network_up{job="node"} == 1))
+        or
+      (sum by (node, device) (label_replace(rate(windows_net_bytes_sent_total{nic!~"(?i).*(isatap|loopback|teredo|vethernet|miniport|tailscale|bluetooth|wi-fi direct|virtual).*"}[1m]), "device", "$1", "nic", "(.*)")) * 8)
+  - record: srt3:nic_speed:bps
+    expr: max by (node, device) (node_network_speed_bytes{job="node"} * 8) > 0
+  - record: srt3:nic_mtu:bytes
+    expr: max by (node, device) (node_network_mtu_bytes{job="node"}) and on (node, device) srt3:nic_speed:bps
+  - record: srt3:nic_util:ratio
+    expr: (srt3:nic_rx:bps > srt3:nic_tx:bps or srt3:nic_tx:bps) / on (node, device) srt3:nic_speed:bps
+  - record: srt3:nic_errors:pps
+    expr: sum by (node, device) (rate(node_network_receive_errs_total{job="node"}[5m]) + rate(node_network_transmit_errs_total{job="node"}[5m]) + rate(node_network_receive_drop_total{job="node"}[5m]) + rate(node_network_transmit_drop_total{job="node"}[5m]))
+  - record: srt3:fabric_10g:bps
+    expr: sum by (node) ((srt3:nic_rx:bps + on (node, device) srt3:nic_tx:bps) and on (node, device) (srt3:nic_speed:bps >= 1e10))
+  - record: srt3:lan_1g:bps
+    expr: sum by (node) ((srt3:nic_rx:bps + on (node, device) srt3:nic_tx:bps) and on (node, device) (srt3:nic_speed:bps < 1e10))
+  - record: srt3:router_rx:bps
+    expr: sum by (device) (rate(node_network_receive_bytes_total{job="router", device!~"lo|.*\\..*"}[1m])) * 8
+  - record: srt3:router_tx:bps
+    expr: sum by (device) (rate(node_network_transmit_bytes_total{job="router", device!~"lo|.*\\..*"}[1m])) * 8
+  - record: srt3:ping_rtt:seconds
+    expr: max by (name, group) (probe_icmp_duration_seconds{phase="rtt"} and on (instance) (probe_success{job="icmp"} == 1))
+  - record: srt3:ping_loss:ratio_5m
+    expr: 1 - avg by (name, group) (avg_over_time(probe_success{job="icmp"}[5m]))
+- name: srt3-power
+  interval: 30s
+  rules:
+  - record: srt3:power:watts
+    expr: label_replace(max by (entity) (hass_sensor_power_w{entity=~"sensor\\.living_room_hs300_plug\\d_.+_current_consumption"}), "device", "$1", "entity", "sensor\\.living_room_hs300_plug\\d_(.+)_current_consumption")
+  - record: srt3:power_strip:watts
+    expr: max(hass_sensor_power_w{entity="sensor.living_room_hs300_main_current_consumption"})
+  - record: srt3:power_cluster:watts
+    expr: sum(srt3:power:watts{device=~"viper|hellcat|demon"})
+  - record: srt3:power_gpu:watts
+    expr: max by (node) (nvidia_smi_power_draw_watts)
+  - record: srt3:electricity_rate:usd_per_kwh
+    expr: vector(0.45)
+  - record: srt3:cluster_cost_monthly:usd
+    expr: srt3:power_cluster:watts * 0.72 * scalar(srt3:electricity_rate:usd_per_kwh)
+  - record: srt3:strip_cost_monthly:usd
+    expr: srt3:power_strip:watts * 0.72 * scalar(srt3:electricity_rate:usd_per_kwh)

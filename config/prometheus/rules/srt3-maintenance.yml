@@ -1,0 +1,32 @@
+groups:
+  - name: srt3-maintenance
+    rules:
+      - alert: ServiceFailed
+        expr: node_systemd_unit_state{state="failed"} == 1
+        for: 5m
+        labels: {severity: warning, host: '{{ $labels.node }}'}
+        annotations:
+          summary: '{{ $labels.node }}: systemd unit {{ $labels.name }} has failed.'
+      - alert: NVMeMediaErrors
+        expr: increase(nvme_media_errors_total[1h]) > 0
+        labels: {severity: warning}
+        annotations:
+          summary: '{{ $labels.node }} NVMe {{ $labels.device }} logged media errors - check SMART / backups.'
+      - alert: NVMeWearHigh
+        expr: nvme_percentage_used_ratio > 0.8
+        for: 1h
+        labels: {severity: warning}
+        annotations:
+          summary: '{{ $labels.node }} NVMe {{ $labels.device }} is {{ $value | humanizePercentage }} through its rated life.'
+      - alert: RebootRequired
+        expr: node_reboot_required == 1
+        for: 1h
+        labels: {severity: info}
+        annotations:
+          summary: '{{ $labels.node }} needs a reboot to finish updates.'
+      - alert: UpdatesPiling
+        expr: sum by (node) (apt_upgrades_pending) > 50
+        for: 1h
+        labels: {severity: info}
+        annotations:
+          summary: '{{ $labels.node }} has {{ $value }} package updates pending.'

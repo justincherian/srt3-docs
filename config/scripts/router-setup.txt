@@ -1,0 +1,12 @@
+# OPTIONAL - GL.iNet Flint 2 router metrics (WAN throughput, per-interface traffic, connections, Wi-Fi clients).
+# From PowerShell:  ssh root@192.168.8.1   (password = your GL.iNet admin password)
+# Then paste:
+opkg update
+opkg install prometheus-node-exporter-lua prometheus-node-exporter-lua-netstat prometheus-node-exporter-lua-openwrt prometheus-node-exporter-lua-nat_traffic prometheus-node-exporter-lua-wifi prometheus-node-exporter-lua-wifi_stations
+uci set prometheus-node-exporter-lua.main.listen_interface='lan'
+uci set prometheus-node-exporter-lua.main.listen_port='9100'
+uci commit prometheus-node-exporter-lua
+/etc/init.d/prometheus-node-exporter-lua enable
+/etc/init.d/prometheus-node-exporter-lua restart
+wget -qO- http://192.168.8.1:9100/metrics | head -5
+# Undo:  opkg remove prometheus-node-exporter-lua*

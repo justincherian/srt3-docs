@@ -1,0 +1,150 @@
+# SRT3 Prometheus - Hellcat. Managed by Claude; source of truth is srt3-docs/config/prometheus.
+global:
+  scrape_interval: 15s
+  evaluation_interval: 30s
+  external_labels:
+    lab: srt3
+
+rule_files:
+  - /etc/prometheus/rules/*.yml
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['localhost:9093']
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: alertmanager
+    scrape_interval: 60s
+    static_configs:
+      - targets: ['localhost:9093']
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'alertmanager_(alerts|alerts_received_total|alerts_invalid_total|notifications_total|notifications_failed_total|notification_latency_seconds_.*|silences|config_last_reload_successful)'
+        action: keep
+
+  # Linux hosts (Proxmox). Exporter-internal and unused series dropped at scrape.
+  - job_name: node
+    static_configs:
+      - targets: ['192.168.8.210:9100']
+        labels: {node: viper}
+      - targets: ['192.168.8.220:9100']
+        labels: {node: hellcat}
+      - targets: ['192.168.8.230:9100']
+        labels: {node: demon}
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'go_.*|process_.*|promhttp_.*|node_scrape_collector_.*|node_softnet_.*|node_cooling_device_.*|node_cpu_guest_seconds_total|node_systemd_socket_.*|node_systemd_timer_.*|node_zfs_zpool_dataset_.*|node_cpu_scaling_governor'
+        action: drop
+      # systemd: keep one series per unit (state="failed") instead of five.
+      - source_labels: [__name__, state]
+        regex: 'node_systemd_unit_state;(active|activating|deactivating|inactive|maintenance|reloading|refreshing)'
+        action: drop
+
+  # Ryzenous (Windows desktop). Down when it's off or asleep - not alerted.
+  - job_name: windows
+    static_configs:
+      - targets: ['192.168.8.101:9182']
+        labels: {node: ryzenous}
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'go_.*|process_.*|promhttp_.*|windows_exporter_collector_.*'
+        action: drop
+
+  - job_name: gpu
+    static_configs:
+      - targets: ['192.168.8.101:9835']
+        labels: {node: ryzenous, gpu: rtx3070}
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'go_.*|process_.*|promhttp_.*'
+        action: drop
+
+  # Home Assistant: HS300 per-outlet power + climate (filtered in HA).
+  - job_name: homeassistant
+    scrape_interval: 30s
+    metrics_path: /api/prometheus
+    authorization:
+      credentials_file: /etc/prometheus/ha_token
+    static_configs:
+      - targets: ['192.168.8.221:8123']
+
+  # GL.iNet Flint 2 (optional - needs prometheus-node-exporter-lua on the router).
+  - job_name: router
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['192.168.8.1:9100']
+        labels: {node: flint2}
+
+  # Service checks: "does the web UI answer, and how fast?"
+  - job_name: http
+    scrape_interval: 30s
+    metrics_path: /probe
+    params: {module: [http_any]}
+    static_configs:
+      - targets: ['http://192.168.8.221:8123/']
+        labels: {name: Home Assistant, host: hellcat, group: core}
+      - targets: ['http://localhost:3000/api/health']
+        labels: {name: Grafana, host: hellcat, group: core}
+      - targets: ['http://192.168.8.211:3000/']
+        labels: {name: Open WebUI, host: viper, group: core}
+      - targets: ['http://192.168.8.231:8090/']
+        labels: {name: Demoncrates, host: demon, group: core}
+      - targets: ['https://192.168.8.210:8006/']
+        labels: {name: Proxmox Viper, host: viper, group: core}
+      - targets: ['https://192.168.8.220:8006/']
+        labels: {name: Proxmox Hellcat, host: hellcat, group: core}
+      - targets: ['https://192.168.8.230:8006/']
+        labels: {name: Proxmox Demon, host: demon, group: core}
+      - targets: ['http://192.168.8.101:11434/']
+        labels: {name: Ollama, host: ryzenous, group: desktop}
+    relabel_configs: &blackbox_relabel
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: localhost:9115
+
+  # Ping latency, hop by hop: LAN -> router -> AT&T gateway -> internet, plus the 10G fabric.
+  - job_name: icmp
+    scrape_interval: 15s
+    metrics_path: /probe
+    params: {module: [icmp]}
+    static_configs:
+      - targets: ['192.168.8.1']
+        labels: {name: Flint 2 router, group: lan}
+      - targets: ['192.168.8.210']
+        labels: {name: Viper, group: lan}
+      - targets: ['192.168.8.230']
+        labels: {name: Demon, group: lan}
+      - targets: ['192.168.8.101']
+        labels: {name: Ryzenous, group: desktop}
+      - targets: ['10.10.10.210']
+        labels: {name: Viper 10G, group: fabric}
+      - targets: ['10.10.10.230']
+        labels: {name: Demon 10G, group: fabric}
+      - targets: ['10.10.10.100']
+        labels: {name: Ryzenous 10G, group: desktop}
+      - targets: ['192.168.1.254']
+        labels: {name: AT&T gateway, group: isp}
+      - targets: ['1.1.1.1']
+        labels: {name: Cloudflare, group: internet}
+      - targets: ['8.8.8.8']
+        labels: {name: Google, group: internet}
+    relabel_configs: *blackbox_relabel
+
+  - job_name: dns
+    scrape_interval: 30s
+    metrics_path: /probe
+    params: {module: [dns_a]}
+    static_configs:
+      - targets: ['192.168.8.1']
+        labels: {name: Router DNS, group: lan}
+      - targets: ['1.1.1.1']
+        labels: {name: Cloudflare DNS, group: internet}
+    relabel_configs: *blackbox_relabel

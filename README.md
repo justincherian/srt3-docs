@@ -37,7 +37,7 @@ A three-node Proxmox cluster of mini PCs with a 10G fabric and a remote GPU desk
 | 3 | [Home Assistant GitOps](docs/03-home-assistant-gitops.md) | Claude → GitHub → HA pull loop, Claudey dashboard, power metering |
 | 4 | [Demoncrates](docs/04-demoncrates.md) | Self-hosted AI DJ pipeline across Demon and Ryzenous |
 | 5 | [Distributed inference](docs/05-distributed-inference.md) | llama.cpp RPC across Ryzenous and Viper (in progress) |
-| 6 | [Observability](docs/06-observability.md) | Prometheus + Grafana on Hellcat, node_exporter on every node, SRT3 Overview dashboard |
+| 6 | [Observability](docs/06-observability.md) | Prometheus + Grafana + Alertmanager, 4 dashboards, phone alerts, issues it caught |
 | — | [Timeline](docs/timeline.md) | What got built, in order |
 | — | [Roadmap](docs/roadmap.md) | What's next |
 

@@ -1,0 +1,2747 @@
+{
+ "uid": "srt3-network",
+ "title": "SRT3 Network",
+ "description": "Internet health, hop-by-hop latency, the 10G fabric, every physical NIC, router, and service checks.",
+ "tags": [
+  "srt3"
+ ],
+ "timezone": "browser",
+ "refresh": "30s",
+ "schemaVersion": 39,
+ "time": {
+  "from": "now-6h",
+  "to": "now"
+ },
+ "graphTooltip": 1,
+ "fiscalYearStartMonth": 0,
+ "liveNow": false,
+ "editable": true,
+ "links": [
+  {
+   "title": "SRT3",
+   "type": "dashboards",
+   "tags": [
+    "srt3"
+   ],
+   "asDropdown": false,
+   "includeVars": false,
+   "keepTime": true,
+   "targetBlank": false,
+   "icon": "external link"
+  }
+ ],
+ "templating": {
+  "list": [
+   {
+    "name": "node",
+    "label": "Hosts",
+    "type": "query",
+    "datasource": {
+     "type": "prometheus",
+     "uid": "ffzw4kaxny6f4c"
+    },
+    "query": {
+     "query": "label_values(srt3:nic_rx:bps, node)",
+     "refId": "q"
+    },
+    "definition": "label_values(srt3:nic_rx:bps, node)",
+    "refresh": 2,
+    "sort": 1,
+    "includeAll": true,
+    "multi": true,
+    "current": {
+     "text": [
+      "All"
+     ],
+     "value": [
+      "$__all"
+     ]
+    }
+   }
+  ]
+ },
+ "annotations": {
+  "list": [
+   {
+    "builtIn": 1,
+    "datasource": {
+     "type": "grafana",
+     "uid": "-- Grafana --"
+    },
+    "enable": true,
+    "hide": true,
+    "iconColor": "rgba(0, 211, 255, 1)",
+    "name": "Annotations & Alerts",
+    "type": "dashboard"
+   },
+   {
+    "datasource": {
+     "type": "prometheus",
+     "uid": "ffzw4kaxny6f4c"
+    },
+    "enable": true,
+    "hide": false,
+    "iconColor": "red",
+    "name": "Alerts firing",
+    "expr": "ALERTS{alertstate=\"firing\", severity!=\"info\"}",
+    "step": "60s",
+    "titleFormat": "{{alertname}}",
+    "textFormat": "{{node}}{{name}}",
+    "tagKeys": "severity",
+    "useValueForTime": false
+   }
+  ]
+ },
+ "panels": [
+  {
+   "id": 1,
+   "type": "row",
+   "title": "Internet",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "type": "timeseries",
+   "title": "Ping, hop by hop",
+   "description": "Hellcat -> router -> AT&T gateway -> internet. Whichever hop jumps first is where the problem is.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "dashed"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     },
+     "decimals": 1,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "red",
+        "value": 0.06
+       }
+      ]
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:ping_rtt:seconds{group=~\"lan|isp|internet\", name=~\"Flint 2 router|AT&T gateway|Cloudflare|Google\"}",
+     "legendFormat": "{{name}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 2,
+   "gridPos": {
+    "x": 0,
+    "y": 1,
+    "w": 12,
+    "h": 9
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "heatmap",
+   "title": "Cloudflare ping distribution",
+   "description": "Each column is a time slice; brighter cells = more pings at that latency. A tight bright band = a stable line. Smears upward = jitter.",
+   "fieldConfig": {
+    "defaults": {
+     "custom": {
+      "scaleDistribution": {
+       "type": "linear"
+      }
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "calculate": true,
+    "calculation": {
+     "yBuckets": {
+      "mode": "count",
+      "value": "24"
+     }
+    },
+    "color": {
+     "mode": "scheme",
+     "scheme": "Oranges",
+     "steps": 64,
+     "exponent": 0.5,
+     "fill": "dark-orange"
+    },
+    "yAxis": {
+     "unit": "s",
+     "decimals": 3,
+     "axisPlacement": "left"
+    },
+    "cellGap": 1,
+    "legend": {
+     "show": true
+    },
+    "tooltip": {
+     "mode": "single",
+     "yHistogram": true
+    },
+    "rowsFrame": {
+     "layout": "auto"
+    },
+    "exemplars": {
+     "color": "rgba(255,0,255,0.7)"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "probe_icmp_duration_seconds{phase=\"rtt\", name=\"Cloudflare\"}",
+     "legendFormat": "rtt",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "interval": "15s"
+    }
+   ],
+   "id": 3,
+   "gridPos": {
+    "x": 12,
+    "y": 1,
+    "w": 12,
+    "h": 9
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "timeseries",
+   "title": "Packet loss (5 min rolling)",
+   "description": "Share of pings with no reply. Ryzenous shows loss while asleep - expected.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "dashed"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     },
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "red",
+        "value": 0.05
+       }
+      ]
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:ping_loss:ratio_5m",
+     "legendFormat": "{{name}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 4,
+   "gridPos": {
+    "x": 0,
+    "y": 10,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "timeseries",
+   "title": "DNS lookup time",
+   "description": "Time to resolve google.com via the router and via Cloudflare directly. If the router is much slower, its DNS is the bottleneck.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     },
+     "decimals": 1
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "probe_duration_seconds{job=\"dns\"}",
+     "legendFormat": "{{name}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 5,
+   "gridPos": {
+    "x": 12,
+    "y": 10,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "id": 6,
+   "type": "row",
+   "title": "10G fabric (MikroTik CRS305)",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 18,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "type": "timeseries",
+   "title": "10G traffic per host",
+   "description": "rx+tx on each 10 Gbit/s NIC. iperf3 peaked at 9.91 Gbit/s - that's the ceiling.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bps",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 15,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:fabric_10g:bps",
+     "legendFormat": "{{node}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 7,
+   "gridPos": {
+    "x": 0,
+    "y": 19,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "timeseries",
+   "title": "10G fabric ping",
+   "description": "Hellcat to the other nodes over 10G vs over the 1G LAN. 10G should be lower and flatter.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     },
+     "decimals": 2
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:ping_rtt:seconds{group=\"fabric\"}",
+     "legendFormat": "{{name}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    },
+    {
+     "refId": "B",
+     "expr": "srt3:ping_rtt:seconds{name=~\"Viper|Demon\"}",
+     "legendFormat": "{{name}} 1G",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 8,
+   "gridPos": {
+    "x": 12,
+    "y": 19,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "id": 9,
+   "type": "row",
+   "title": "NICs on $node",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 27,
+    "w": 24,
+    "h": 1
+   },
+   "panels": [],
+   "repeat": "node"
+  },
+  {
+   "type": "timeseries",
+   "title": "$node: traffic per NIC (in up, out down)",
+   "description": "This row repeats once per host selected in the Hosts dropdown.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bps",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 10,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": ".* out$"
+      },
+      "properties": [
+       {
+        "id": "custom.transform",
+        "value": "negative-Y"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:nic_rx:bps{node=~\"$node\"}",
+     "legendFormat": "{{device}} in",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    },
+    {
+     "refId": "B",
+     "expr": "srt3:nic_tx:bps{node=~\"$node\"}",
+     "legendFormat": "{{device}} out",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 10,
+   "gridPos": {
+    "x": 0,
+    "y": 28,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "bargauge",
+   "title": "$node: link utilization",
+   "description": "Busier direction / negotiated link speed.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit",
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 0.7
+       },
+       {
+        "color": "red",
+        "value": 0.9
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "max": 1,
+     "decimals": 1
+    },
+    "overrides": []
+   },
+   "options": {
+    "displayMode": "gradient",
+    "orientation": "horizontal",
+    "showUnfilled": true,
+    "valueMode": "color",
+    "namePlacement": "left",
+    "sizing": "auto",
+    "minVizHeight": 16,
+    "maxVizHeight": 28,
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:nic_util:ratio{node=~\"$node\"}",
+     "legendFormat": "{{device}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false
+    }
+   ],
+   "id": 11,
+   "gridPos": {
+    "x": 12,
+    "y": 28,
+    "w": 6,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "timeseries",
+   "title": "$node: errors + drops",
+   "description": "Should be flat zero. Anything else = bad cable, MTU mismatch, or a struggling driver.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "pps",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom",
+     "calcs": [],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:nic_errors:pps{node=~\"$node\"}",
+     "legendFormat": "{{device}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 12,
+   "gridPos": {
+    "x": 18,
+    "y": 28,
+    "w": 6,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "id": 13,
+   "type": "row",
+   "title": "All physical interfaces",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 36,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "type": "table",
+   "title": "Link speed, MTU, utilization",
+   "description": "Every physical NIC. 10G ports should show 10 Gb/s and MTU 9000; if not, an alert fires.",
+   "fieldConfig": {
+    "defaults": {
+     "custom": {
+      "align": "auto",
+      "cellOptions": {
+       "type": "auto"
+      },
+      "filterable": false
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Value #A"
+      },
+      "properties": [
+       {
+        "id": "displayName",
+        "value": "Speed"
+       },
+       {
+        "id": "unit",
+        "value": "bps"
+       },
+       {
+        "id": "thresholds",
+        "value": {
+         "mode": "absolute",
+         "steps": [
+          {
+           "color": "text",
+           "value": null
+          },
+          {
+           "color": "green",
+           "value": 10000000000.0
+          }
+         ]
+        }
+       },
+       {
+        "id": "custom.cellOptions",
+        "value": {
+         "type": "color-text"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Value #B"
+      },
+      "properties": [
+       {
+        "id": "displayName",
+        "value": "MTU"
+       },
+       {
+        "id": "unit",
+        "value": "none"
+       },
+       {
+        "id": "thresholds",
+        "value": {
+         "mode": "absolute",
+         "steps": [
+          {
+           "color": "orange",
+           "value": null
+          },
+          {
+           "color": "green",
+           "value": 9000
+          }
+         ]
+        }
+       },
+       {
+        "id": "custom.cellOptions",
+        "value": {
+         "type": "color-text"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Value #C"
+      },
+      "properties": [
+       {
+        "id": "displayName",
+        "value": "Utilization"
+       },
+       {
+        "id": "unit",
+        "value": "percentunit"
+       },
+       {
+        "id": "decimals",
+        "value": 1
+       },
+       {
+        "id": "thresholds",
+        "value": {
+         "mode": "absolute",
+         "steps": [
+          {
+           "color": "green",
+           "value": null
+          },
+          {
+           "color": "orange",
+           "value": 0.7
+          },
+          {
+           "color": "red",
+           "value": 0.9
+          }
+         ]
+        }
+       },
+       {
+        "id": "custom.cellOptions",
+        "value": {
+         "type": "gauge"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Value #D"
+      },
+      "properties": [
+       {
+        "id": "displayName",
+        "value": "In"
+       },
+       {
+        "id": "unit",
+        "value": "bps"
+       },
+       {
+        "id": "decimals",
+        "value": 1
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Value #E"
+      },
+      "properties": [
+       {
+        "id": "displayName",
+        "value": "Out"
+       },
+       {
+        "id": "unit",
+        "value": "bps"
+       },
+       {
+        "id": "decimals",
+        "value": 1
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "showHeader": true,
+    "cellHeight": "sm",
+    "footer": {
+     "show": false
+    }
+   },
+   "transformations": [
+    {
+     "id": "merge",
+     "options": {}
+    },
+    {
+     "id": "organize",
+     "options": {
+      "excludeByName": {
+       "Time": true
+      },
+      "indexByName": {
+       "node": 0,
+       "device": 1
+      }
+     }
+    }
+   ],
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:nic_speed:bps",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "refId": "B",
+     "expr": "srt3:nic_mtu:bytes",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "refId": "C",
+     "expr": "srt3:nic_util:ratio",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "refId": "D",
+     "expr": "srt3:nic_rx:bps",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "refId": "E",
+     "expr": "srt3:nic_tx:bps",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false,
+     "format": "table"
+    }
+   ],
+   "id": 14,
+   "gridPos": {
+    "x": 0,
+    "y": 37,
+    "w": 24,
+    "h": 7
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "id": 15,
+   "type": "row",
+   "title": "Router - GL.iNet Flint 2  (needs the optional router step)",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 44,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "type": "timeseries",
+   "title": "Router traffic per interface (in up, out down)",
+   "description": "WAN = the port to the AT&T gateway. Empty until prometheus-node-exporter-lua is installed on the router.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bps",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 10,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": ".* out$"
+      },
+      "properties": [
+       {
+        "id": "custom.transform",
+        "value": "negative-Y"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:router_rx:bps",
+     "legendFormat": "{{device}} in",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    },
+    {
+     "refId": "B",
+     "expr": "srt3:router_tx:bps",
+     "legendFormat": "{{device}} out",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 16,
+   "gridPos": {
+    "x": 0,
+    "y": 45,
+    "w": 16,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Router exporter",
+   "description": "",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "red",
+        "value": null
+       },
+       {
+        "color": "green",
+        "value": 1
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "mappings": [
+      {
+       "type": "value",
+       "options": {
+        "0": {
+         "text": "DOWN",
+         "color": "red",
+         "index": 0
+        },
+        "1": {
+         "text": "UP",
+         "color": "green",
+         "index": 1
+        }
+       }
+      }
+     ],
+     "noValue": "not installed"
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "background",
+    "graphMode": "none",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "up{job=\"router\"}",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 17,
+   "gridPos": {
+    "x": 16,
+    "y": 45,
+    "w": 8,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Router conntrack entries",
+   "description": "Open NAT connections through the router.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 0,
+     "noValue": "-"
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "area",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "node_nf_conntrack_entries{job=\"router\"}",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 18,
+   "gridPos": {
+    "x": 16,
+    "y": 49,
+    "w": 8,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "id": 19,
+   "type": "row",
+   "title": "Services",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 53,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "type": "timeseries",
+   "title": "Response time per service",
+   "description": "Full HTTP round-trip from Hellcat, every 30s.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     },
+     "decimals": 2
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "probe_duration_seconds{job=\"http\"}",
+     "legendFormat": "{{name}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 20,
+   "gridPos": {
+    "x": 0,
+    "y": 54,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "table",
+   "title": "Service checks",
+   "description": "Status, HTTP code, and days until the TLS cert expires (Proxmox self-signed certs last ~2 years).",
+   "fieldConfig": {
+    "defaults": {
+     "custom": {
+      "align": "auto",
+      "cellOptions": {
+       "type": "auto"
+      },
+      "filterable": false
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Value #A"
+      },
+      "properties": [
+       {
+        "id": "displayName",
+        "value": "Status"
+       },
+       {
+        "id": "thresholds",
+        "value": {
+         "mode": "absolute",
+         "steps": [
+          {
+           "color": "red",
+           "value": null
+          },
+          {
+           "color": "green",
+           "value": 1
+          }
+         ]
+        }
+       },
+       {
+        "id": "custom.cellOptions",
+        "value": {
+         "type": "color-background",
+         "mode": "gradient"
+        }
+       },
+       {
+        "id": "mappings",
+        "value": [
+         {
+          "type": "value",
+          "options": {
+           "0": {
+            "text": "DOWN",
+            "color": "red",
+            "index": 0
+           },
+           "1": {
+            "text": "UP",
+            "color": "green",
+            "index": 1
+           }
+          }
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Value #B"
+      },
+      "properties": [
+       {
+        "id": "displayName",
+        "value": "HTTP"
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Value #C"
+      },
+      "properties": [
+       {
+        "id": "displayName",
+        "value": "Cert days left"
+       },
+       {
+        "id": "unit",
+        "value": "none"
+       },
+       {
+        "id": "decimals",
+        "value": 0
+       },
+       {
+        "id": "thresholds",
+        "value": {
+         "mode": "absolute",
+         "steps": [
+          {
+           "color": "red",
+           "value": null
+          },
+          {
+           "color": "orange",
+           "value": 14
+          },
+          {
+           "color": "green",
+           "value": 30
+          }
+         ]
+        }
+       },
+       {
+        "id": "custom.cellOptions",
+        "value": {
+         "type": "color-text"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "showHeader": true,
+    "cellHeight": "sm",
+    "footer": {
+     "show": false
+    }
+   },
+   "transformations": [
+    {
+     "id": "merge",
+     "options": {}
+    },
+    {
+     "id": "organize",
+     "options": {
+      "excludeByName": {
+       "Time": true,
+       "__name__": true,
+       "job": true,
+       "lab": true,
+       "group": true
+      },
+      "indexByName": {
+       "name": 0,
+       "host": 1,
+       "instance": 2
+      }
+     }
+    }
+   ],
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "probe_success{job=\"http\"}",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "refId": "B",
+     "expr": "probe_http_status_code{job=\"http\"}",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "refId": "C",
+     "expr": "(probe_ssl_earliest_cert_expiry{job=\"http\"} - time()) / 86400",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false,
+     "format": "table"
+    }
+   ],
+   "id": 21,
+   "gridPos": {
+    "x": 12,
+    "y": 54,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  }
+ ]
+}

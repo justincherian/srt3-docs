@@ -14,4 +14,4 @@ The order things were built in. Most of it happened in October 2026.
 10. **Homelable.** A 27-node network map inside HA.
 11. **This repo.** Documentation and diagrams.
 12. **Storage path verified and benchmarked.** Confirmed the library share mounts over 10G (`10.10.10.100`). Measured the same share over 1G and 10G: read 118 → ~980 MB/s, write 111 → 724 MB/s.
-13. **Observability.** Prometheus and Grafana on Hellcat, node_exporter on Viper, Hellcat and Demon, and the SRT3 Overview dashboard. See [doc 6](06-observability.md).
+13. **Observability.** Prometheus, Alertmanager and blackbox on Hellcat. Exporters on every host plus Ryzenous and its RTX 3070, and HS300 power via Home Assistant. 4 Grafana dashboards, 23 alert rules pushed to the iPhone. First catches: Demon's 10G MTU misconfig, duplicate Docker exporters, a dead swap file on Viper. See [doc 6](06-observability.md).

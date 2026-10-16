@@ -1,0 +1,2479 @@
+{
+ "uid": "srt3-gpu-power",
+ "title": "SRT3 GPU & Power",
+ "description": "RTX 3070 on Ryzenous in depth, plus per-outlet power, energy and cost.",
+ "tags": [
+  "srt3"
+ ],
+ "timezone": "browser",
+ "refresh": "30s",
+ "schemaVersion": 39,
+ "time": {
+  "from": "now-6h",
+  "to": "now"
+ },
+ "graphTooltip": 1,
+ "fiscalYearStartMonth": 0,
+ "liveNow": false,
+ "editable": true,
+ "links": [
+  {
+   "title": "SRT3",
+   "type": "dashboards",
+   "tags": [
+    "srt3"
+   ],
+   "asDropdown": false,
+   "includeVars": false,
+   "keepTime": true,
+   "targetBlank": false,
+   "icon": "external link"
+  }
+ ],
+ "templating": {
+  "list": []
+ },
+ "annotations": {
+  "list": [
+   {
+    "builtIn": 1,
+    "datasource": {
+     "type": "grafana",
+     "uid": "-- Grafana --"
+    },
+    "enable": true,
+    "hide": true,
+    "iconColor": "rgba(0, 211, 255, 1)",
+    "name": "Annotations & Alerts",
+    "type": "dashboard"
+   }
+  ]
+ },
+ "panels": [
+  {
+   "id": 1,
+   "type": "row",
+   "title": "GPU - RTX 3070 (Ryzenous)",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "type": "timeseries",
+   "title": "GPU + memory-controller utilization",
+   "description": "Cores = compute busy. Memory bus = VRAM bandwidth busy (LLM token generation is usually memory-bound).",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 10,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     },
+     "min": 0,
+     "max": 1
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(nvidia_smi_utilization_gpu_ratio)",
+     "legendFormat": "GPU cores",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    },
+    {
+     "refId": "B",
+     "expr": "max(nvidia_smi_utilization_memory_ratio)",
+     "legendFormat": "memory bus",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 2,
+   "gridPos": {
+    "x": 0,
+    "y": 1,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "timeseries",
+   "title": "VRAM",
+   "description": "8 GB. A model that doesn't fit spills to system RAM and gets ~10x slower.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bytes",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 15,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "total"
+      },
+      "properties": [
+       {
+        "id": "custom.lineStyle",
+        "value": {
+         "fill": "dash",
+         "dash": [
+          8,
+          6
+         ]
+        }
+       },
+       {
+        "id": "custom.fillOpacity",
+        "value": 0
+       },
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "text"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(nvidia_smi_memory_used_bytes)",
+     "legendFormat": "used",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    },
+    {
+     "refId": "B",
+     "expr": "max(nvidia_smi_memory_total_bytes)",
+     "legendFormat": "total",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 3,
+   "gridPos": {
+    "x": 12,
+    "y": 1,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "timeseries",
+   "title": "Power draw vs limit",
+   "description": "When draw hugs the limit, the card is power-throttling.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "watt",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 10,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "enforced limit"
+      },
+      "properties": [
+       {
+        "id": "custom.lineStyle",
+        "value": {
+         "fill": "dash",
+         "dash": [
+          8,
+          6
+         ]
+        }
+       },
+       {
+        "id": "custom.fillOpacity",
+        "value": 0
+       },
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "red"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(nvidia_smi_power_draw_watts)",
+     "legendFormat": "draw",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    },
+    {
+     "refId": "B",
+     "expr": "max(nvidia_smi_enforced_power_limit_watts)",
+     "legendFormat": "enforced limit",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 4,
+   "gridPos": {
+    "x": 0,
+    "y": 9,
+    "w": 8,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "timeseries",
+   "title": "Temperature",
+   "description": "Alert at 83 \u00b0C for 5 min.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "celsius",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "dashed"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     },
+     "decimals": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 75
+       },
+       {
+        "color": "red",
+        "value": 83
+       }
+      ]
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(nvidia_smi_temperature_gpu)",
+     "legendFormat": "GPU core",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 5,
+   "gridPos": {
+    "x": 8,
+    "y": 9,
+    "w": 8,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "timeseries",
+   "title": "Fan speed",
+   "description": "",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     },
+     "min": 0,
+     "max": 1
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(nvidia_smi_fan_speed_ratio)",
+     "legendFormat": "fan",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 6,
+   "gridPos": {
+    "x": 16,
+    "y": 9,
+    "w": 8,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "timeseries",
+   "title": "Clocks",
+   "description": "Clocks drop when idle or throttling.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "hertz",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(nvidia_smi_clocks_current_graphics_clock_hz)",
+     "legendFormat": "graphics",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    },
+    {
+     "refId": "B",
+     "expr": "max(nvidia_smi_clocks_current_memory_clock_hz)",
+     "legendFormat": "memory",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 7,
+   "gridPos": {
+    "x": 0,
+    "y": 17,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "state-timeline",
+   "title": "Why is it slowing down? (throttle reasons)",
+   "description": "Lit bar = that reason is active. Idle is normal. Power cap under load is normal. Thermal is not.",
+   "fieldConfig": {
+    "defaults": {
+     "mappings": [
+      {
+       "type": "value",
+       "options": {
+        "0": {
+         "text": "no",
+         "color": "transparent",
+         "index": 0
+        },
+        "1": {
+         "text": "active",
+         "color": "orange",
+         "index": 1
+        }
+       }
+      }
+     ],
+     "color": {
+      "mode": "thresholds"
+     },
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "red",
+        "value": null
+       },
+       {
+        "color": "green",
+        "value": 1
+       }
+      ]
+     },
+     "custom": {
+      "fillOpacity": 85,
+      "lineWidth": 0
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "showValue": "never",
+    "mergeValues": true,
+    "rowHeight": 0.8,
+    "alignValue": "left",
+    "legend": {
+     "showLegend": false
+    },
+    "tooltip": {
+     "mode": "single"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(nvidia_smi_clocks_event_reasons_gpu_idle)",
+     "legendFormat": "idle",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    },
+    {
+     "refId": "B",
+     "expr": "max(nvidia_smi_clocks_event_reasons_sw_power_cap)",
+     "legendFormat": "power cap",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    },
+    {
+     "refId": "C",
+     "expr": "max(nvidia_smi_clocks_event_reasons_sw_thermal_slowdown)",
+     "legendFormat": "thermal (sw)",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    },
+    {
+     "refId": "D",
+     "expr": "max(nvidia_smi_clocks_event_reasons_hw_thermal_slowdown)",
+     "legendFormat": "thermal (hw)",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    },
+    {
+     "refId": "E",
+     "expr": "max(nvidia_smi_clocks_event_reasons_hw_slowdown)",
+     "legendFormat": "hw slowdown",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 8,
+   "gridPos": {
+    "x": 12,
+    "y": 17,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "id": 9,
+   "type": "row",
+   "title": "Power (HS300 strip)",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 25,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "type": "stat",
+   "title": "Strip now",
+   "description": "Everything on the HS300.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "watt",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 1
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "area",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:power_strip:watts",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 10,
+   "gridPos": {
+    "x": 0,
+    "y": 26,
+    "w": 4,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Cluster now",
+   "description": "Viper + Hellcat + Demon.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "watt",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 1
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "area",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:power_cluster:watts",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 11,
+   "gridPos": {
+    "x": 4,
+    "y": 26,
+    "w": 4,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Cluster idle floor (24h)",
+   "description": "Lowest cluster draw in 24h: what the lab costs doing nothing.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "watt",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 1
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "min_over_time(srt3:power_cluster:watts[24h])",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 12,
+   "gridPos": {
+    "x": 8,
+    "y": 26,
+    "w": 4,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Cluster energy (24h)",
+   "description": "Average draw x 24 h.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "kwatth",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 2
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "avg_over_time(srt3:power_cluster:watts[24h]) * 24 / 1000",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 13,
+   "gridPos": {
+    "x": 12,
+    "y": 26,
+    "w": 4,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Cluster $/month",
+   "description": "At current draw, $0.45/kWh.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "currencyUSD",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 30
+       },
+       {
+        "color": "red",
+        "value": 60
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 2
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "area",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:cluster_cost_monthly:usd",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 14,
+   "gridPos": {
+    "x": 16,
+    "y": 26,
+    "w": 4,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Strip $/month",
+   "description": "Whole strip at current draw.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "currencyUSD",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 40
+       },
+       {
+        "color": "red",
+        "value": 80
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 2
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "area",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:strip_cost_monthly:usd",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 15,
+   "gridPos": {
+    "x": 20,
+    "y": 26,
+    "w": 4,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "timeseries",
+   "title": "Per outlet",
+   "description": "Unstacked, so you can compare outlets directly.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "watt",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:power:watts",
+     "legendFormat": "{{device}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 16,
+   "gridPos": {
+    "x": 0,
+    "y": 30,
+    "w": 16,
+    "h": 9
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "bargauge",
+   "title": "Energy per outlet, last 24h",
+   "description": "kWh per outlet over the last day.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "kwatth",
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 2
+    },
+    "overrides": []
+   },
+   "options": {
+    "displayMode": "basic",
+    "orientation": "horizontal",
+    "showUnfilled": true,
+    "valueMode": "color",
+    "namePlacement": "left",
+    "sizing": "auto",
+    "minVizHeight": 16,
+    "maxVizHeight": 28,
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "avg_over_time(srt3:power:watts[24h]) * 24 / 1000",
+     "legendFormat": "{{device}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false
+    }
+   ],
+   "id": 17,
+   "gridPos": {
+    "x": 16,
+    "y": 30,
+    "w": 8,
+    "h": 9
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "timeseries",
+   "title": "Cluster power vs cluster CPU",
+   "description": "Pair with the panel to the right: how many watts does extra CPU work cost?",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "watt",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 10,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:power_cluster:watts",
+     "legendFormat": "cluster watts",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 18,
+   "gridPos": {
+    "x": 0,
+    "y": 39,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "timeseries",
+   "title": "Cluster CPU (avg of 3 nodes)",
+   "description": "Same time axis as the power panel - crosshair is shared.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 10,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     },
+     "min": 0,
+     "max": 1
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "avg(srt3:cpu_busy:ratio{node=~\"viper|hellcat|demon\"})",
+     "legendFormat": "avg CPU busy",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 19,
+   "gridPos": {
+    "x": 12,
+    "y": 39,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  }
+ ]
+}

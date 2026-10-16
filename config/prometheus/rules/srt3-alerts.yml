@@ -1,0 +1,113 @@
+# Alert rules. Prometheus evaluates these every 30s; firing alerts go to
+# Alertmanager (:9093) -> Home Assistant webhook -> iPhone.
+# severity: critical/warning = phone push, info = dashboard only.
+groups:
+  - name: srt3-availability
+    rules:
+      - alert: NodeDown
+        expr: up{job="node"} == 0
+        for: 2m
+        labels: {severity: critical, host: '{{ $labels.node }}'}
+        annotations:
+          summary: '{{ $labels.node }} is not answering Prometheus (hung, off, or off the network).'
+      - alert: NodeRebooted
+        expr: changes(node_boot_time_seconds[10m]) > 0
+        labels: {severity: info}
+        annotations:
+          summary: '{{ $labels.node }} rebooted in the last 10 minutes.'
+      - alert: ServiceDown
+        expr: probe_success{job="http", group="core"} == 0
+        for: 3m
+        labels: {severity: warning}
+        annotations:
+          summary: '{{ $labels.name }} ({{ $labels.instance }}) is not responding.'
+      - alert: ScrapeTargetMissing
+        expr: up{job=~"homeassistant|alertmanager"} == 0
+        for: 10m
+        labels: {severity: warning}
+        annotations:
+          summary: 'Prometheus cannot scrape {{ $labels.job }} ({{ $labels.instance }}).'
+
+  - name: srt3-network
+    rules:
+      - alert: InternetDown
+        expr: max(probe_success{job="icmp", group="internet"}) == 0
+        for: 2m
+        labels: {severity: critical}
+        annotations:
+          summary: 'No ping replies from Cloudflare or Google - internet looks down.'
+      - alert: InternetLatencyHigh
+        expr: min(srt3:ping_rtt:seconds{group="internet"}) > 0.06
+        for: 10m
+        labels: {severity: warning}
+        annotations:
+          summary: 'Internet ping is {{ $value | humanizeDuration }} (normal on fiber is under 20ms).'
+      - alert: PacketLoss
+        expr: srt3:ping_loss:ratio_5m{group=~"internet|isp|lan|fabric"} > 0.05
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: '{{ $labels.name }}: {{ $value | humanizePercentage }} packet loss over 5 min.'
+      - alert: DNSSlow
+        expr: probe_duration_seconds{job="dns"} > 0.5
+        for: 10m
+        labels: {severity: info}
+        annotations:
+          summary: '{{ $labels.name }} lookups taking {{ $value | humanizeDuration }}.'
+      - alert: NICErrors
+        expr: srt3:nic_errors:pps > 1
+        for: 10m
+        labels: {severity: warning}
+        annotations:
+          summary: '{{ $labels.node }} {{ $labels.device }}: {{ $value | printf "%.1f" }} errors/drops per second.'
+      - alert: TenGigLinkDegraded
+        expr: srt3:nic_speed:bps{device=~"enp1s0.*"} < 1e10
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: '{{ $labels.node }} {{ $labels.device }} negotiated {{ $value | humanize }}bps instead of 10G.'
+      - alert: JumboFramesLost
+        expr: srt3:nic_mtu:bytes{device=~"enp1s0.*"} < 9000
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: '{{ $labels.node }} {{ $labels.device }} MTU is {{ $value }} (expected 9000).'
+
+  - name: srt3-resources
+    rules:
+      - alert: HighCPU
+        expr: srt3:cpu_busy:ratio{node!="ryzenous"} > 0.9
+        for: 15m
+        labels: {severity: warning}
+        annotations:
+          summary: '{{ $labels.node }} CPU at {{ $value | humanizePercentage }} for 15 min.'
+      - alert: MemoryPressure
+        expr: srt3:mem_used:ratio{node!="ryzenous"} > 0.92
+        for: 10m
+        labels: {severity: warning}
+        annotations:
+          summary: '{{ $labels.node }} memory at {{ $value | humanizePercentage }}.'
+      - alert: DiskFillingUp
+        expr: predict_linear(node_filesystem_avail_bytes{mountpoint="/"}[6h], 7 * 86400) < 0
+        for: 1h
+        labels: {severity: warning}
+        annotations:
+          summary: '{{ $labels.node }} root disk will be full within 7 days at the current rate.'
+      - alert: HostHot
+        expr: srt3:temp_max:celsius > 85
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: '{{ $labels.node }} at {{ $value }}°C.'
+      - alert: GPUHot
+        expr: nvidia_smi_temperature_gpu > 83
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: 'RTX 3070 at {{ $value }}°C.'
+      - alert: ClusterPowerHigh
+        expr: srt3:power_cluster:watts > 150
+        for: 15m
+        labels: {severity: info}
+        annotations:
+          summary: 'Cluster drawing {{ $value | printf "%.0f" }} W.'

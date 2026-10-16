@@ -1,0 +1,23 @@
+# Alertmanager -> Home Assistant webhook -> iPhone push (see srt3-homeassistant/packages/prometheus.yaml)
+route:
+  receiver: home-assistant
+  group_by: [alertname, node, name]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 12h
+  routes:
+    - matchers: ['severity="info"']
+      receiver: dashboard-only
+receivers:
+  - name: home-assistant
+    webhook_configs:
+      - url: http://192.168.8.221:8123/api/webhook/<webhook-id from srt3-homeassistant/packages/prometheus.yaml>
+        send_resolved: true
+  - name: dashboard-only
+inhibit_rules:
+  # A node that's down will also fail its service checks - only page once.
+  - source_matchers: ['alertname="NodeDown"']
+    target_matchers: ['alertname=~"ServiceDown|PingFailing"']
+    equal: [host]
+  - source_matchers: ['alertname="InternetDown"']
+    target_matchers: ['alertname=~"InternetLatencyHigh|PacketLoss|DNSSlow"']

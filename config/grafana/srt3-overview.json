@@ -1,0 +1,2983 @@
+{
+ "uid": "srt3-overview",
+ "title": "SRT3 Overview",
+ "description": "Home screen: is everything up, how hard is it working, what does it cost. Click any host bar to drill down.",
+ "tags": [
+  "srt3"
+ ],
+ "timezone": "browser",
+ "refresh": "30s",
+ "schemaVersion": 39,
+ "time": {
+  "from": "now-6h",
+  "to": "now"
+ },
+ "graphTooltip": 1,
+ "fiscalYearStartMonth": 0,
+ "liveNow": false,
+ "editable": true,
+ "links": [
+  {
+   "title": "SRT3",
+   "type": "dashboards",
+   "tags": [
+    "srt3"
+   ],
+   "asDropdown": false,
+   "includeVars": false,
+   "keepTime": true,
+   "targetBlank": false,
+   "icon": "external link"
+  }
+ ],
+ "templating": {
+  "list": []
+ },
+ "annotations": {
+  "list": [
+   {
+    "builtIn": 1,
+    "datasource": {
+     "type": "grafana",
+     "uid": "-- Grafana --"
+    },
+    "enable": true,
+    "hide": true,
+    "iconColor": "rgba(0, 211, 255, 1)",
+    "name": "Annotations & Alerts",
+    "type": "dashboard"
+   },
+   {
+    "datasource": {
+     "type": "prometheus",
+     "uid": "ffzw4kaxny6f4c"
+    },
+    "enable": true,
+    "hide": false,
+    "iconColor": "#d95926",
+    "name": "Reboots",
+    "expr": "changes(node_boot_time_seconds{job=\"node\"}[2m]) > 0",
+    "step": "60s",
+    "titleFormat": "{{node}} rebooted",
+    "textFormat": "Boot time changed",
+    "tagKeys": "node",
+    "useValueForTime": false
+   },
+   {
+    "datasource": {
+     "type": "prometheus",
+     "uid": "ffzw4kaxny6f4c"
+    },
+    "enable": true,
+    "hide": false,
+    "iconColor": "red",
+    "name": "Alerts firing",
+    "expr": "ALERTS{alertstate=\"firing\", severity!=\"info\"}",
+    "step": "60s",
+    "titleFormat": "{{alertname}}",
+    "textFormat": "{{node}}{{name}}",
+    "tagKeys": "severity",
+    "useValueForTime": false
+   }
+  ]
+ },
+ "panels": [
+  {
+   "type": "stat",
+   "title": "Active alerts",
+   "description": "Alerts currently firing (critical + warning). These also push to your iPhone through Home Assistant. Click to open the alert list.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "red",
+        "value": 1
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "links": [
+      {
+       "title": "Open alert list",
+       "url": "/alerting/list"
+      }
+     ]
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "background",
+    "graphMode": "none",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "count(ALERTS{alertstate=\"firing\", severity!=\"info\"}) or vector(0)",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 1,
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 4,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Cluster power",
+   "description": "Viper + Hellcat + Demon, from the HS300 outlets. Sparkline = trend over the time range.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "watt",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 80
+       },
+       {
+        "color": "red",
+        "value": 150
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 1
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "area",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:power_cluster:watts",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 2,
+   "gridPos": {
+    "x": 4,
+    "y": 0,
+    "w": 4,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Cluster cost / month",
+   "description": "Projected: current draw x 720 h x $0.45/kWh (PG&E blended). Change the rate in /etc/prometheus/rules/srt3-records.yml.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "currencyUSD",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 30
+       },
+       {
+        "color": "red",
+        "value": 60
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 2
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "area",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:cluster_cost_monthly:usd",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 3,
+   "gridPos": {
+    "x": 8,
+    "y": 0,
+    "w": 4,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Internet ping",
+   "description": "Best round-trip to Cloudflare / Google from Hellcat. AT&T fiber is normally 3-15 ms.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 0.03
+       },
+       {
+        "color": "red",
+        "value": 0.06
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 1
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "area",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "min(srt3:ping_rtt:seconds{group=\"internet\"})",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 4,
+   "gridPos": {
+    "x": 12,
+    "y": 0,
+    "w": 4,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Packet loss (5 min)",
+   "description": "Share of internet pings that got no reply in the last 5 minutes.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 0.01
+       },
+       {
+        "color": "red",
+        "value": 0.05
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 1
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "area",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(srt3:ping_loss:ratio_5m{group=\"internet\"})",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 5,
+   "gridPos": {
+    "x": 16,
+    "y": 0,
+    "w": 4,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "stat",
+   "title": "10G fabric traffic",
+   "description": "Sum of rx+tx on all NICs negotiated at 10 Gbit/s (Mellanox CX312B on the CRS305).",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bps",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 1
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "area",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sum(srt3:fabric_10g:bps)",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 6,
+   "gridPos": {
+    "x": 20,
+    "y": 0,
+    "w": 4,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "state-timeline",
+   "title": "Up / down history",
+   "description": "Green = answering, red = not. Hosts come from Prometheus scrapes; services from HTTP checks every 30s; internet from pings. Ryzenous and Ollama go red whenever the desktop sleeps - that's expected.",
+   "fieldConfig": {
+    "defaults": {
+     "mappings": [
+      {
+       "type": "value",
+       "options": {
+        "0": {
+         "text": "DOWN",
+         "color": "red",
+         "index": 0
+        },
+        "1": {
+         "text": "UP",
+         "color": "green",
+         "index": 1
+        }
+       }
+      }
+     ],
+     "color": {
+      "mode": "thresholds"
+     },
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "red",
+        "value": null
+       },
+       {
+        "color": "green",
+        "value": 1
+       }
+      ]
+     },
+     "custom": {
+      "fillOpacity": 85,
+      "lineWidth": 0
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "showValue": "never",
+    "mergeValues": true,
+    "rowHeight": 0.8,
+    "alignValue": "left",
+    "legend": {
+     "showLegend": false
+    },
+    "tooltip": {
+     "mode": "single"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "up{job=\"node\", node!=\"\"}",
+     "legendFormat": "{{node}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    },
+    {
+     "refId": "B",
+     "expr": "up{job=\"windows\"}",
+     "legendFormat": "ryzenous",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    },
+    {
+     "refId": "C",
+     "expr": "up{job=\"gpu\"}",
+     "legendFormat": "ryzenous GPU",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    },
+    {
+     "refId": "D",
+     "expr": "probe_success{job=\"http\"}",
+     "legendFormat": "{{name}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    },
+    {
+     "refId": "E",
+     "expr": "max by (name) (probe_success{job=\"icmp\", group=\"internet\"})",
+     "legendFormat": "internet: {{name}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 7,
+   "gridPos": {
+    "x": 0,
+    "y": 4,
+    "w": 24,
+    "h": 11
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "id": 8,
+   "type": "row",
+   "title": "Hosts  (click a bar to drill into that host)",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 15,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "type": "bargauge",
+   "title": "CPU busy",
+   "description": "Share of CPU time not idle, averaged over all cores, last 2 min.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit",
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 0.7
+       },
+       {
+        "color": "red",
+        "value": 0.9
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "max": 1,
+     "links": [
+      {
+       "title": "Host detail: ${__field.labels.node}",
+       "url": "/d/srt3-host/srt3-host-detail?var-node=${__field.labels.node}&${__url_time_range}"
+      }
+     ],
+     "decimals": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "displayMode": "gradient",
+    "orientation": "horizontal",
+    "showUnfilled": true,
+    "valueMode": "color",
+    "namePlacement": "left",
+    "sizing": "auto",
+    "minVizHeight": 16,
+    "maxVizHeight": 28,
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:cpu_busy:ratio",
+     "legendFormat": "{{node}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false
+    }
+   ],
+   "id": 9,
+   "gridPos": {
+    "x": 0,
+    "y": 16,
+    "w": 6,
+    "h": 7
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "bargauge",
+   "title": "Memory used",
+   "description": "RAM in use (excludes reclaimable cache). On Proxmox this includes VM memory.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit",
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 0.7
+       },
+       {
+        "color": "red",
+        "value": 0.9
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "max": 1,
+     "links": [
+      {
+       "title": "Host detail: ${__field.labels.node}",
+       "url": "/d/srt3-host/srt3-host-detail?var-node=${__field.labels.node}&${__url_time_range}"
+      }
+     ],
+     "decimals": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "displayMode": "gradient",
+    "orientation": "horizontal",
+    "showUnfilled": true,
+    "valueMode": "color",
+    "namePlacement": "left",
+    "sizing": "auto",
+    "minVizHeight": 16,
+    "maxVizHeight": 28,
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:mem_used:ratio",
+     "legendFormat": "{{node}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false
+    }
+   ],
+   "id": 10,
+   "gridPos": {
+    "x": 6,
+    "y": 16,
+    "w": 6,
+    "h": 7
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "bargauge",
+   "title": "Root disk used",
+   "description": "/ on Linux, C: on Ryzenous. An alert fires if the trend says it'll be full within 7 days.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit",
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 0.8
+       },
+       {
+        "color": "red",
+        "value": 0.9
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "max": 1,
+     "links": [
+      {
+       "title": "Host detail: ${__field.labels.node}",
+       "url": "/d/srt3-host/srt3-host-detail?var-node=${__field.labels.node}&${__url_time_range}"
+      }
+     ],
+     "decimals": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "displayMode": "gradient",
+    "orientation": "horizontal",
+    "showUnfilled": true,
+    "valueMode": "color",
+    "namePlacement": "left",
+    "sizing": "auto",
+    "minVizHeight": 16,
+    "maxVizHeight": 28,
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:root_disk_used:ratio",
+     "legendFormat": "{{node}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false
+    }
+   ],
+   "id": 11,
+   "gridPos": {
+    "x": 12,
+    "y": 16,
+    "w": 6,
+    "h": 7
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "bargauge",
+   "title": "Hottest sensor",
+   "description": "Highest hwmon reading per host (CPU package, NVMe, etc). M920q throttles near 100 \u00b0C.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "celsius",
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 70
+       },
+       {
+        "color": "red",
+        "value": 85
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "max": 100,
+     "links": [
+      {
+       "title": "Host detail: ${__field.labels.node}",
+       "url": "/d/srt3-host/srt3-host-detail?var-node=${__field.labels.node}&${__url_time_range}"
+      }
+     ],
+     "decimals": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "displayMode": "gradient",
+    "orientation": "horizontal",
+    "showUnfilled": true,
+    "valueMode": "color",
+    "namePlacement": "left",
+    "sizing": "auto",
+    "minVizHeight": 16,
+    "maxVizHeight": 28,
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:temp_max:celsius",
+     "legendFormat": "{{node}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false
+    }
+   ],
+   "id": 12,
+   "gridPos": {
+    "x": 18,
+    "y": 16,
+    "w": 6,
+    "h": 7
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "timeseries",
+   "title": "CPU busy over time",
+   "description": "Recorded every 30s by a recording rule, so this panel is cheap no matter the time range.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     },
+     "min": 0,
+     "max": 1
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:cpu_busy:ratio",
+     "legendFormat": "{{node}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 13,
+   "gridPos": {
+    "x": 0,
+    "y": 23,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "timeseries",
+   "title": "Memory used over time",
+   "description": "Bytes in use per host. Hellcat (16 GB) runs the Home Assistant VM plus this monitoring stack.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bytes",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:mem_used:bytes",
+     "legendFormat": "{{node}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 14,
+   "gridPos": {
+    "x": 12,
+    "y": 23,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "id": 15,
+   "type": "row",
+   "title": "Maintenance",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 31,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "type": "bargauge",
+   "title": "Package updates pending",
+   "description": "apt packages with updates available, per Proxmox host (refreshed by a Debian timer every few hours).",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 20
+       },
+       {
+        "color": "red",
+        "value": 50
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "links": [
+      {
+       "title": "Host detail: ${__field.labels.node}",
+       "url": "/d/srt3-host/srt3-host-detail?var-node=${__field.labels.node}&${__url_time_range}"
+      }
+     ],
+     "decimals": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "displayMode": "basic",
+    "orientation": "horizontal",
+    "showUnfilled": true,
+    "valueMode": "color",
+    "namePlacement": "left",
+    "sizing": "auto",
+    "minVizHeight": 16,
+    "maxVizHeight": 28,
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sum by (node) (apt_upgrades_pending)",
+     "legendFormat": "{{node}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false
+    }
+   ],
+   "id": 16,
+   "gridPos": {
+    "x": 0,
+    "y": 32,
+    "w": 8,
+    "h": 6
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "bargauge",
+   "title": "NVMe wear",
+   "description": "SMART 'percentage used': how far through its rated write life each boot SSD is.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit",
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 0.5
+       },
+       {
+        "color": "red",
+        "value": 0.8
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "max": 1,
+     "links": [
+      {
+       "title": "Host detail: ${__field.labels.node}",
+       "url": "/d/srt3-host/srt3-host-detail?var-node=${__field.labels.node}&${__url_time_range}"
+      }
+     ],
+     "decimals": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "displayMode": "basic",
+    "orientation": "horizontal",
+    "showUnfilled": true,
+    "valueMode": "color",
+    "namePlacement": "left",
+    "sizing": "auto",
+    "minVizHeight": 16,
+    "maxVizHeight": 28,
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max by (node) (nvme_percentage_used_ratio)",
+     "legendFormat": "{{node}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false
+    }
+   ],
+   "id": 17,
+   "gridPos": {
+    "x": 8,
+    "y": 32,
+    "w": 8,
+    "h": 6
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Failed services",
+   "description": "systemd units in the failed state on any Proxmox host, shown as host \u00b7 unit. Host Detail lists them too.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "red",
+        "value": 1
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "noValue": "None"
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "background",
+    "graphMode": "none",
+    "textMode": "name",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "node_systemd_unit_state{state=\"failed\"} == 1",
+     "legendFormat": "{{node}} \u00b7 {{name}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false
+    }
+   ],
+   "id": 18,
+   "gridPos": {
+    "x": 16,
+    "y": 32,
+    "w": 4,
+    "h": 6
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Reboot needed",
+   "description": "Hosts that installed a kernel/lib update and need a reboot to finish it.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 1
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "background",
+    "graphMode": "none",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "count(node_reboot_required == 1) or vector(0)",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 19,
+   "gridPos": {
+    "x": 20,
+    "y": 32,
+    "w": 4,
+    "h": 6
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "id": 20,
+   "type": "row",
+   "title": "Network",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 38,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "type": "timeseries",
+   "title": "Ping, hop by hop",
+   "description": "Round-trip from Hellcat to each hop. If only the internet lines spike, it's the ISP; if the router line spikes too, it's your LAN.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     },
+     "decimals": 1
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:ping_rtt:seconds{name=~\"Flint 2 router|AT&T gateway|Cloudflare|Google\"}",
+     "legendFormat": "{{name}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 21,
+   "gridPos": {
+    "x": 0,
+    "y": 39,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "timeseries",
+   "title": "Throughput: 10G fabric vs 1G LAN",
+   "description": "rx+tx per host. 10G = Mellanox port on the CRS305; 1G = onboard NIC to the NicGiga/router.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bps",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": ".* 1G$"
+      },
+      "properties": [
+       {
+        "id": "custom.lineStyle",
+        "value": {
+         "fill": "dash",
+         "dash": [
+          6,
+          4
+         ]
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:fabric_10g:bps",
+     "legendFormat": "{{node}} 10G",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    },
+    {
+     "refId": "B",
+     "expr": "srt3:lan_1g:bps",
+     "legendFormat": "{{node}} 1G",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 22,
+   "gridPos": {
+    "x": 12,
+    "y": 39,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "bargauge",
+   "title": "Service response time",
+   "description": "How long each web UI took to answer the last check (30s interval). Down services show in the timeline above.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s",
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 0.5
+       },
+       {
+        "color": "red",
+        "value": 2
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 2
+    },
+    "overrides": []
+   },
+   "options": {
+    "displayMode": "basic",
+    "orientation": "horizontal",
+    "showUnfilled": true,
+    "valueMode": "color",
+    "namePlacement": "left",
+    "sizing": "auto",
+    "minVizHeight": 16,
+    "maxVizHeight": 28,
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "probe_duration_seconds{job=\"http\"}",
+     "legendFormat": "{{name}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false
+    }
+   ],
+   "id": 23,
+   "gridPos": {
+    "x": 0,
+    "y": 47,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "bargauge",
+   "title": "Busiest NICs right now",
+   "description": "rx+tx per physical NIC across every host.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bps",
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 1
+    },
+    "overrides": []
+   },
+   "options": {
+    "displayMode": "basic",
+    "orientation": "horizontal",
+    "showUnfilled": true,
+    "valueMode": "color",
+    "namePlacement": "left",
+    "sizing": "auto",
+    "minVizHeight": 16,
+    "maxVizHeight": 28,
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "topk(6, srt3:nic_rx:bps + on(node, device) srt3:nic_tx:bps)",
+     "legendFormat": "{{node}} {{device}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false
+    }
+   ],
+   "id": 24,
+   "gridPos": {
+    "x": 12,
+    "y": 47,
+    "w": 12,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "id": 25,
+   "type": "row",
+   "title": "Power",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 55,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "type": "timeseries",
+   "title": "Power by outlet (HS300)",
+   "description": "Each HS300 outlet, stacked, so the top edge is the whole strip.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "watt",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 1,
+      "fillOpacity": 55,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "normal",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:power:watts",
+     "legendFormat": "{{device}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 26,
+   "gridPos": {
+    "x": 0,
+    "y": 56,
+    "w": 16,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "piechart",
+   "title": "Share of strip power (now)",
+   "description": "Where the watts are going right now.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "watt",
+     "color": {
+      "mode": "palette-classic"
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "pieType": "donut",
+    "displayLabels": [],
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "showLegend": true,
+     "values": [
+      "value",
+      "percent"
+     ]
+    },
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "tooltip": {
+     "mode": "single"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3:power:watts",
+     "legendFormat": "{{device}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 27,
+   "gridPos": {
+    "x": 16,
+    "y": 56,
+    "w": 8,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "id": 28,
+   "type": "row",
+   "title": "GPU - Ryzenous RTX 3070",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 64,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "type": "gauge",
+   "title": "GPU utilization",
+   "description": "Busy share of the GPU's SMs. LLM inference and Demucs show up here.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit",
+     "min": 0,
+     "max": 1,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 0.85
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "showThresholdMarkers": true,
+    "showThresholdLabels": false,
+    "minVizHeight": 75
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(nvidia_smi_utilization_gpu_ratio)",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 29,
+   "gridPos": {
+    "x": 0,
+    "y": 65,
+    "w": 6,
+    "h": 6
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "gauge",
+   "title": "VRAM used",
+   "description": "8 GB card. A loaded Ollama model sits here even when idle.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit",
+     "min": 0,
+     "max": 1,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 0.75
+       },
+       {
+        "color": "red",
+        "value": 0.92
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "showThresholdMarkers": true,
+    "showThresholdLabels": false,
+    "minVizHeight": 75
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(nvidia_smi_memory_used_bytes) / max(nvidia_smi_memory_total_bytes)",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 30,
+   "gridPos": {
+    "x": 6,
+    "y": 65,
+    "w": 6,
+    "h": 6
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "gauge",
+   "title": "GPU temperature",
+   "description": "",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "celsius",
+     "min": 20,
+     "max": 95,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 75
+       },
+       {
+        "color": "red",
+        "value": 83
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "showThresholdMarkers": true,
+    "showThresholdLabels": false,
+    "minVizHeight": 75
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(nvidia_smi_temperature_gpu)",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 31,
+   "gridPos": {
+    "x": 12,
+    "y": 65,
+    "w": 6,
+    "h": 6
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "gauge",
+   "title": "GPU power",
+   "description": "Board power from nvidia-smi (3070 limit is about 220 W).",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "watt",
+     "min": 0,
+     "max": 240,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 180
+       },
+       {
+        "color": "red",
+        "value": 220
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "showThresholdMarkers": true,
+    "showThresholdLabels": false,
+    "minVizHeight": 75
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(nvidia_smi_power_draw_watts)",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 32,
+   "gridPos": {
+    "x": 18,
+    "y": 65,
+    "w": 6,
+    "h": 6
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "id": 33,
+   "type": "row",
+   "title": "Alerts",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 71,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "type": "table",
+   "title": "Firing now",
+   "description": "Every alert rule currently firing, straight from the ALERTS metric Prometheus keeps. Empty = all good.",
+   "fieldConfig": {
+    "defaults": {
+     "custom": {
+      "align": "auto",
+      "cellOptions": {
+       "type": "auto"
+      },
+      "filterable": false
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "showHeader": true,
+    "cellHeight": "sm",
+    "footer": {
+     "show": false
+    }
+   },
+   "transformations": [
+    {
+     "id": "organize",
+     "options": {
+      "excludeByName": {
+       "Time": true,
+       "Value": true,
+       "__name__": true,
+       "alertstate": true,
+       "job": true,
+       "instance": true,
+       "lab": true,
+       "phase": true
+      },
+      "indexByName": {
+       "alertname": 0,
+       "severity": 1,
+       "node": 2,
+       "name": 3,
+       "device": 4
+      }
+     }
+    }
+   ],
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "ALERTS{alertstate=\"firing\"}",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false,
+     "format": "table"
+    }
+   ],
+   "id": 34,
+   "gridPos": {
+    "x": 0,
+    "y": 72,
+    "w": 24,
+    "h": 6
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "id": 35,
+   "type": "row",
+   "title": "How this works",
+   "collapsed": true,
+   "gridPos": {
+    "x": 0,
+    "y": 78,
+    "w": 24,
+    "h": 1
+   },
+   "panels": [
+    {
+     "type": "text",
+     "title": "",
+     "options": {
+      "mode": "markdown",
+      "content": "### How this stack works\n\n**Exporters** are tiny programs on each machine that publish numbers at `http://host:port/metrics`:\n`node_exporter` on Viper/Hellcat/Demon (:9100), `windows_exporter` (:9182) and `nvidia_gpu_exporter` (:9835) on Ryzenous,\nHome Assistant's `/api/prometheus` for the HS300, and `blackbox_exporter` on Hellcat, which pings and HTTP-checks things on Prometheus's behalf.\n\n**Prometheus** (Hellcat :9090) *scrapes* (pulls) every target every 15-30 s and stores each number as a time series.\nEvery series has a name and labels, e.g. `node_network_receive_bytes_total{node=\"viper\", device=\"enp1s0d1\"}`.\n\n**PromQL** is the query language. `rate(x[1m])` turns an ever-increasing counter into a per-second speed. `sum by (node)` groups. `x > 0.9` filters.\nHover the (i) on any panel to see what it measures. Click **Edit** on a panel to see its exact query.\n\n**Recording rules** precompute common queries every 30 s into clean `srt3:*` series (e.g. `srt3:cpu_busy:ratio`), so these dashboards stay fast.\n**Alert rules** are PromQL conditions with a duration (`for: 5m`). Firing alerts go to **Alertmanager** (:9093), which de-duplicates, groups and sends them to Home Assistant, which pushes them to your phone.\n\n**Grafana** (here) only draws. Try these: drag-select on any graph to zoom; press `Esc` to back out; change the time range top-right;\nhover one graph and the crosshair follows on all of them; click a host bar to drill down; the orange/red markers on graphs are reboots and alerts.\nExplore (compass icon, left menu) is a blank query scratchpad. Try `srt3:` and let autocomplete show you everything."
+     },
+     "datasource": null,
+     "id": 900,
+     "gridPos": {
+      "x": 0,
+      "y": 79,
+      "w": 24,
+      "h": 14
+     }
+    }
+   ]
+  }
+ ]
+}
