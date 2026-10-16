@@ -136,6 +136,12 @@ scrape_configs:
         labels: {name: Cloudflare, group: internet}
       - targets: ['8.8.8.8']
         labels: {name: Google, group: internet}
+      - targets: ['192.168.10.10']
+        labels: {name: HS300 strip, group: iot}
+      - targets: ['192.168.10.20']
+        labels: {name: ecobee, group: iot}
+      - targets: ['192.168.10.30']
+        labels: {name: KL60 bulb, group: iot}
     relabel_configs: *blackbox_relabel
 
   - job_name: dns

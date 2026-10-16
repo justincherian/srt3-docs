@@ -1,0 +1,36 @@
+# Security alerts, fed by srt3-security-textfile.sh on each Proxmox host (runs every minute).
+groups:
+  - name: srt3-security
+    rules:
+      - alert: NewListeningPort
+        # A network-reachable port that wasn't listening 24h ago. Skips Proxmox's on-demand
+        # web-console ports (5900-5999) and only evaluates once a host has a day of history.
+        expr: |
+          (srt3_listening_port{addr="any", port!~"59[0-9][0-9]"}
+            unless on (node, proto, port) (srt3_listening_port offset 1d))
+          and on (node) (srt3_security_last_run_timestamp_seconds offset 1d)
+        labels: {severity: warning, host: '{{ $labels.node }}'}
+        annotations:
+          summary: '{{ $labels.node }}: new open port {{ $labels.proto }}/{{ $labels.port }} ({{ $labels.process }}) reachable from the network.'
+      - alert: LoginBruteForce
+        expr: srt3_auth_failures_15m > 10
+        labels: {severity: warning, host: '{{ $labels.node }}'}
+        annotations:
+          summary: '{{ $labels.node }}: {{ $value }} failed {{ $labels.service }} logins in 15 min.'
+      - alert: SSHPasswordLoginEnabled
+        expr: srt3_ssh_password_auth == 1
+        for: 1h
+        labels: {severity: info}
+        annotations:
+          summary: '{{ $labels.node }} still accepts SSH passwords (key-only recommended).'
+      - alert: SecurityUpdatesPending
+        expr: sum by (node) (apt_upgrades_pending{origin=~".*security.*"}) > 0
+        for: 3d
+        labels: {severity: warning, host: '{{ $labels.node }}'}
+        annotations:
+          summary: '{{ $labels.node }} has had {{ $value }} security updates waiting for 3+ days.'
+      - alert: SecurityCollectorStale
+        expr: time() - srt3_security_last_run_timestamp_seconds > 600
+        labels: {severity: warning, host: '{{ $labels.node }}'}
+        annotations:
+          summary: '{{ $labels.node }}: security collector has not reported for 10+ min.'

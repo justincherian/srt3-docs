@@ -269,6 +269,7 @@ def overview():
         ("up{job=\"gpu\"}", "ryzenous GPU"),
         ("probe_success{job=\"http\"}", "{{name}}"),
         ("max by (name) (probe_success{job=\"icmp\", group=\"internet\"})", "internet: {{name}}"),
+        ("max by (name) (probe_success{job=\"icmp\", group=\"iot\"})", "iot: {{name}}"),
     ], "Green = answering, red = not. Hosts come from Prometheus scrapes; services from HTTP checks every 30s; internet from pings. Ryzenous and Ollama go red whenever the desktop sleeps - that's expected."),
           0, 24, 11)
 
@@ -309,6 +310,37 @@ def overview():
     d.add(stat(d, "Reboot needed", "count(node_reboot_required == 1) or vector(0)", "none",
                "Hosts that installed a kernel/lib update and need a reboot to finish it.", thr(GREEN, (1, ORANGE)),
                color_mode="background", graph="none"), 20, 4, 6)
+
+    # --- security
+    d.row("Security")
+    sp = stat(d, "SSH password login", [("max by (node) (srt3_ssh_password_auth)", "{{node}}")], "none",
+              "Does sshd accept passwords? Key-only is the goal: password guessing becomes impossible.",
+              thr(GREEN, (1, ORANGE)), color_mode="background", graph="none", no_value="no data",
+              mappings=[{"type": "value", "options": {"0": {"text": "key-only", "index": 0}, "1": {"text": "password ON", "index": 1}}}])
+    sp["options"]["textMode"] = "value_and_name"
+    d.add(sp, 0, 6, 6, False)
+    fl = stat(d, "Failed logins (15 min)", [("sum by (node) (srt3_auth_failures_15m)", "{{node}}")], "none",
+              "Failed SSH + Proxmox web logins per host, last 15 minutes. Alert at >10.",
+              thr(GREEN, (3, ORANGE), (10, RED)), graph="area", decimals=0)
+    fl["options"]["textMode"] = "value_and_name"
+    d.add(fl, 6, 6, 6, False)
+    d.add(bars(d, "Security updates pending", [("sum by (node) (apt_upgrades_pending{origin=~\".*security.*\"})", "{{node}}")], "none",
+               "Packages from Debian's security repo waiting to install. Alert if any wait 3+ days.",
+               thr(GREEN, (1, ORANGE), (20, RED)), decimals=0, links=host_link(), mode="basic"), 12, 6, 6, False)
+    d.add(stat(d, "DNS blocked (AdGuard, 24h)", "sum(adguard_blocked) / sum(adguard_queries)", "percentunit",
+               "Share of DNS lookups AdGuard Home blocked (ads, trackers, malware). Details on the Network dashboard.",
+               thr(GREEN), decimals=1, graph="area"), 18, 3, 6, False)
+    d.add(stat(d, "Malware/phishing blocked", "sum(adguard_blocked_malware)", "none",
+               "Lookups blocked by AdGuard's safe-browsing list in its 24h window. Anything above 0 means a device tried to reach a known-bad domain.",
+               thr(GREEN, (1, ORANGE)), color_mode="background", graph="none", decimals=0, no_value="0"), 21, 3, 6)
+    d.add(table(d, "Ports reachable from the network", [d.target("srt3_listening_port{addr=\"any\"}", "", "A", True, "table")],
+                "Every TCP/UDP port listening on a non-loopback address, per Proxmox host. A port that wasn't here yesterday triggers NewListeningPort.",
+                organize={"excludeByName": {"Time": True, "Value": True, "__name__": True, "instance": True, "job": True, "lab": True, "addr": True},
+                          "indexByName": {"node": 0, "proto": 1, "port": 2, "process": 3}}), 0, 16, 8, False)
+    d.panels[-1]["transformations"].append({"id": "sortBy", "options": {"sort": [{"field": "node"}]}})
+    d.add(bars(d, "Open ports per host", [("count by (node) (srt3_listening_port{addr=\"any\"})", "{{node}}")], "none",
+               "Fewer is better. Each open port is something an attacker on your network could try.",
+               thr(GREEN), decimals=0, links=host_link(), mode="basic"), 16, 8, 8)
 
     # --- network
     d.row("Network")
@@ -566,6 +598,29 @@ def network():
                "Open NAT connections through the router.", thr(GREEN), decimals=0, no_value="-"), 16, 8, 4)
     d.panels[-1]["gridPos"]["y"] = d.panels[-2]["gridPos"]["y"] + 4
     d.y = d.panels[-3]["gridPos"]["y"] + 8
+
+    d.row("DNS - AdGuard Home (on the Flint 2)")
+    for i, (t, e, u, desc, th) in enumerate([
+        ("Queries (24h)", "sum(adguard_queries)", "short", "DNS lookups from every device in AdGuard's 24h window.", thr(GREEN)),
+        ("Blocked (24h)", "sum(adguard_blocked)", "short", "Ads, trackers, malware.", thr(GREEN)),
+        ("Blocked %", "sum(adguard_blocked) / sum(adguard_queries)", "percentunit", "", thr(GREEN)),
+        ("Malware blocked", "sum(adguard_blocked_malware)", "short", "Safe-browsing hits: a device tried a known-bad domain.", thr(GREEN, (1, ORANGE))),
+        ("Avg lookup time", "max(adguard_avg_processing_seconds)", "s", "AdGuard's average processing time per query.", thr(GREEN, (0.05, ORANGE), (0.2, RED))),
+        ("Protection", "max(adguard_protection_enabled)", "none", "Filtering on/off. 'down' = Hellcat can't reach the AdGuard API.", thr(RED, (1, GREEN)))]):
+        st = stat(d, t, e, u, desc, th, decimals=1 if u != "short" else 0, graph="none",
+                  color_mode="background" if t in ("Protection", "Malware blocked") else "value")
+        if t == "Protection":
+            st["fieldConfig"]["defaults"]["mappings"] = [{"type": "value", "options": {"0": {"text": "OFF", "index": 0}, "1": {"text": "ON", "index": 1}}}]
+            st["fieldConfig"]["defaults"]["noValue"] = "down"
+        d.add(st, i * 4, 4, 4, i == 5)
+    d.add(ts(d, "Blocked % over time", [("sum(adguard_blocked) / sum(adguard_queries)", "blocked share (24h window)")], "percentunit",
+             "Rolling 24h block rate. A sudden jump can mean a device started phoning home a lot.", fill=10, minv=0), 0, 12, 7, False)
+    d.add(ts(d, "Queries in the latest hour", [("max(adguard_queries_last_hour)", "queries"), ("max(adguard_blocked_last_hour)", "blocked")], "short",
+             "AdGuard's current hourly bucket.", fill=10), 12, 12, 7)
+    d.add(bars(d, "Top clients (24h)", [("topk(12, adguard_top_client_queries)", "{{name}}")], "short",
+               "Which devices make the most DNS lookups. IoT devices showing up high here are worth a look.", thr(GREEN), decimals=0, mode="basic"), 0, 8, 10, False)
+    d.add(bars(d, "Top blocked domains (24h)", [("topk(12, adguard_top_blocked_domain_queries)", "{{domain}}")], "short", "", thr(GREEN), decimals=0, mode="basic"), 8, 8, 10, False)
+    d.add(bars(d, "Top queried domains (24h)", [("topk(12, adguard_top_queried_domain_queries)", "{{domain}}")], "short", "", thr(GREEN), decimals=0, mode="basic"), 16, 8, 10)
 
     d.row("Services")
     d.add(ts(d, "Response time per service", [("probe_duration_seconds{job=\"http\"}", "{{name}}")], "s",
