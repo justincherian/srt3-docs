@@ -88,11 +88,11 @@ groups:
         annotations:
           summary: '{{ $labels.node }} memory at {{ $value | humanizePercentage }}.'
       - alert: DiskFillingUp
-        expr: predict_linear(node_filesystem_avail_bytes{mountpoint="/"}[6h], 7 * 86400) < 0
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} < 0.20) and predict_linear(node_filesystem_avail_bytes{mountpoint="/"}[24h], 7 * 86400) < 0
         for: 1h
         labels: {severity: warning}
         annotations:
-          summary: '{{ $labels.node }} root disk will be full within 7 days at the current rate.'
+          summary: '{{ $labels.node }} root disk is under 20% free and on track to fill within 7 days.'
       - alert: HostHot
         expr: srt3:temp_max:celsius > 85
         for: 5m
