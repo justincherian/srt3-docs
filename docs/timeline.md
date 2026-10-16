@@ -14,3 +14,4 @@ The order things were built in. Most of it happened in October 2026.
 10. **Homelable.** A 27-node network map inside HA.
 11. **This repo.** Documentation and diagrams.
 12. **Storage path verified and benchmarked.** Confirmed the library share mounts over 10G (`10.10.10.100`). Measured the same share over 1G and 10G: read 118 → ~980 MB/s, write 111 → 724 MB/s.
+13. **Observability.** Prometheus and Grafana on Hellcat, node_exporter on Viper, Hellcat and Demon, and the SRT3 Overview dashboard. See [doc 6](06-observability.md).
