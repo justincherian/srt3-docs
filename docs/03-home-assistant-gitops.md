@@ -36,7 +36,23 @@ sequenceDiagram
 
 ## Homelable
 
-A network-map panel inside HA at `/homelable`. It holds a 27-node diagram covering the internet path, cluster, VMs, IoT and clients. It was written through HA's WebSocket API, because the panel's shadow DOM blocks UI automation.
+A network-map panel inside HA at `/homelable`, written through HA's WebSocket API (`homelable/get_canvas`, `homelable/save_canvas`), because the panel's shadow DOM blocks UI automation.
+
+![Homelable map](../assets/homelable-map.png)
+
+The current map (v3, Oct 16) has **30 nodes and 27 links**:
+
+- **Internet path:** AT&T gateway (`192.168.1.254`) → Flint 2 (`.1`, AdGuard Home, Tailscale) → NicGiga.
+- **Cluster:** Viper, Hellcat and Demon on 1G from the NicGiga and 10G from the CRS305. Ryzenous takes 1G from the Flint 2 and 10G from the CRS305.
+- **Guests:** Open WebUI (`.211`), Home Assistant (`.221`), the Hellcat monitoring stack (Prometheus, Grafana, Alertmanager), Demoncrates (LXC 101, `.231`), and the file-share VM (`.236`).
+- **IoT network (`192.168.10.0/24`):** HS300 `.10`, ecobee `.20`, KL60 `.30`, shown as isolated.
+- **Main LAN media and clients:** Hisense TV, LG soundbar, MacBook Pro, iPhone, and two unidentified clients (`.107`, `.130`).
+
+The same layout is saved as two designs, "Network Topology" and "SRT3 Network". Each earlier version is kept as a backup design.
+
+**Lessons:**
+- Homelable links each node to a scanned device by IP, and the label lives on the device record. Two nodes with the same IP merge, and the last save wins. A service on a host (such as the monitoring stack) needs its own node with no IP; its health check then targets the URL.
+- An open Homelable tab that still has an old canvas loaded can save it over newer changes. Reload every tab after an API write.
 
 ## Limits
 

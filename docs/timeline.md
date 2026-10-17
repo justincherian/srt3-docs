@@ -11,7 +11,8 @@ The order things were built in. Most of it happened in October 2026.
 7. **Demoncrates.** Ingest and analysis, the GPU worker (Demucs and CLAP), the web app, rekordbox export, and a static IP at `.231`.
 8. **Remote access.** Tailscale on the Flint 2.
 9. **Home Assistant GitOps.** The `srt3-homeassistant` repo with the Git pull add-on, the Claudey dashboard, HS300 power and cost sensors, and Wake-on-LAN for Ryzenous.
-10. **Homelable.** A 27-node network map inside HA.
+10. **Homelable.** A network map inside HA, first with 27 nodes.
 11. **This repo.** Documentation and diagrams.
 12. **Storage path verified and benchmarked.** Confirmed the library share mounts over 10G (`10.10.10.100`). Measured the same share over 1G and 10G: read 118 → ~980 MB/s, write 111 → 724 MB/s.
 13. **Observability.** Prometheus, Alertmanager and blackbox on Hellcat. Exporters on every host plus Ryzenous and its RTX 3070, and HS300 power via Home Assistant. 4 Grafana dashboards, 23 alert rules pushed to the iPhone. First catches: Demon's 10G MTU misconfig, duplicate Docker exporters, a dead swap file on Viper. See [doc 6](06-observability.md).
+14. **Homelable v3.** The map now matches the current network: the IoT subnet (`192.168.10.0/24`) with HS300, ecobee and the new KL60 bulb, a 10G link to Ryzenous, the Hellcat monitoring stack, Demoncrates as LXC 101, AdGuard on the Flint 2, and named clients. 30 nodes, 27 links. See [doc 3](03-home-assistant-gitops.md#homelable).
