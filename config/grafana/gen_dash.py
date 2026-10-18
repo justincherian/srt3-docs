@@ -559,6 +559,21 @@ def network():
                                      ("srt3:ping_rtt:seconds{name=~\"Viper|Demon\"}", "{{name}} 1G")],
              "s", "Hellcat to the other nodes over 10G vs over the 1G LAN. 10G should be lower and flatter.",
              fill=0, decimals=2), 12, 12, 8)
+    live = ('sum by (node) ((irate(node_network_receive_bytes_total{job="node"}[1m]) + irate(node_network_transmit_bytes_total{job="node"}[1m])) * 8'
+            ' and on (node, device) (srt3:nic_speed:bps >= 1e10))')
+    d.add(ts(d, "10G live (every scrape, for benchmarks)", [(live, "{{node}}")], "bps",
+             "Raw per-scrape rate (15 s steps), not the 1-minute average above, so short iperf3 phases show at full height.",
+             fill=15), 0, 10, 8, False)
+    for t in d.panels[-1]["targets"]: t["interval"] = "15s"
+    d.panels[-1]["fieldConfig"]["defaults"]["custom"]["lineInterpolation"] = "stepAfter"
+    d.add(bars(d, "Last iperf3 run (Viper - Demon)", [("srt3_iperf_gbps", "{{test}}")], "Gbits",
+               "push = Viper to Demon, pull = Demon to Viper, bidir = both at once (max 20). Rerun on Viper: systemd-run --unit=srt3-iperf --collect /root/srt3-iperf.sh",
+               thr(RED, (8, ORANGE), (9.5, GREEN)), maxv=20, decimals=2, mode="basic"), 10, 6, 8, False)
+    d.add(bars(d, "Retransmits (last run)", [("srt3_iperf_retransmits", "{{test}}")], "short",
+               "TCP resends during each 45 s phase. Hundreds to a few thousand at 10G is normal; tens of thousands means a bad cable, optic or NIC.",
+               thr(GREEN, (10000, ORANGE), (50000, RED)), decimals=0, mode="basic"), 16, 4, 8, False)
+    d.add(stat(d, "Last benchmark", "max(srt3_iperf_last_run_timestamp_seconds) * 1000", "dateTimeFromNow",
+               "When the last iperf3 run finished.", thr(GREEN), graph="none", instant=True), 20, 4, 8)
 
     inner_y = d.y + 1
     d.row("NICs on $node", repeat="node")
@@ -703,6 +718,34 @@ def gpu_power():
              "Pair with the panel to the right: how many watts does extra CPU work cost?", fill=10), 0, 12, 8, False)
     d.add(ts(d, "Cluster CPU (avg of 3 nodes)", [("avg(srt3:cpu_busy:ratio{node=~\"viper|hellcat|demon\"})", "avg CPU busy")],
              "percentunit", "Same time axis as the power panel - crosshair is shared.", fill=10, minv=0, maxv=1), 12, 12, 8)
+
+    # --- energy from the HS300's own kWh meters (survive HA/Prometheus outages)
+    def outlet_kwh(period):
+        return ('label_replace(max by (entity) (hass_sensor_energy_kwh{entity=~"sensor\\\\.living_room_hs300_plug\\\\d_.+_%s_consumption"}),'
+                ' "device", "$1", "entity", "sensor\\\\.living_room_hs300_plug\\\\d_(.+)_%s_consumption")' % (period, period))
+    def strip_kwh(period):
+        return 'max(hass_sensor_energy_kwh{entity="sensor.living_room_hs300_main_%s_consumption"})' % period
+    rate = " * scalar(srt3:electricity_rate:usd_per_kwh)"
+    cluster_today = 'sum(max by (entity) (hass_sensor_energy_kwh{entity=~"sensor\\\\.living_room_hs300_plug\\\\d_(viper|hellcat|demon)_today_s_consumption"}))'
+    d.row("Energy (the strip's own kWh meters)")
+    d.add(stat(d, "Strip today", strip_kwh("today_s"), "kwatth",
+               "kWh since midnight, counted by the HS300 itself, so it's complete even if monitoring was down.", thr(GREEN), decimals=2), 0, 5, 4, False)
+    d.add(stat(d, "Today's cost", strip_kwh("today_s") + rate, "currencyUSD", "Strip kWh today x $0.45.", thr(GREEN), decimals=2), 5, 5, 4, False)
+    d.add(stat(d, "Strip this month", strip_kwh("this_month_s"), "kwatth", "kWh since the 1st, from the strip.", thr(GREEN), decimals=1), 10, 5, 4, False)
+    d.add(stat(d, "Month so far $", strip_kwh("this_month_s") + rate, "currencyUSD", "Strip kWh this month x $0.45.",
+               thr(GREEN, (40, ORANGE), (80, RED)), decimals=2), 15, 5, 4, False)
+    d.add(stat(d, "Cluster share today", cluster_today + " / " + strip_kwh("today_s"), "percentunit",
+               "Viper + Hellcat + Demon as a share of the whole strip today.", thr(GREEN), decimals=0), 20, 4, 4)
+    d.add(bars(d, "Today per outlet", [(outlet_kwh("today_s"), "{{device}}")], "kwatth", "kWh since midnight.",
+               thr(GREEN), decimals=2, mode="basic"), 0, 8, 9, False)
+    d.add(bars(d, "This month per outlet", [(outlet_kwh("this_month_s"), "{{device}}")], "kwatth", "kWh since the 1st.",
+               thr(GREEN), decimals=1, mode="basic"), 8, 8, 9, False)
+    p = ts(d, "Daily running total per outlet (resets at midnight)", [(outlet_kwh("today_s"), "{{device}}")], "kwatth",
+           "Each day climbs from 0 at midnight; the peak just before the drop is that day's total. Last 7 days.",
+           stack=True, fill=40, line=1)
+    p["timeFrom"] = "7d"
+    p["fieldConfig"]["overrides"] = entity_overrides()
+    d.add(p, 16, 8, 9)
     return d.build()
 
 

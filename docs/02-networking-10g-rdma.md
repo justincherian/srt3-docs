@@ -24,6 +24,20 @@ flowchart LR
 - 9.91 Gbit/s over TCP is about 99% of 10G line rate, so jumbo frames removed most of the per-packet overhead.
 - RDMA at ~1006 MiB/s is about 8.4 Gbit/s. The win is the **~2.73 µs latency**: ordinary TCP round trips through the kernel are typically tens of microseconds. Latency, not bandwidth, is what dominates layer-by-layer tensor handoffs in split inference.
 
+## Re-benchmark with monitoring (2026-10-16)
+
+Run from Viper to Demon over `10.10.10.x` with iperf3 (4 streams, 45 s per phase), using [`config/scripts/srt3-iperf.sh`](../config/scripts/srt3-iperf.sh). The script writes its results to Prometheus (`srt3_iperf_*`), and Grafana shows them under **SRT3 Network → 10G fabric**.
+
+| Phase | Throughput | TCP retransmits |
+| --- | --- | --- |
+| Push (Viper → Demon) | **9.90 Gbit/s** | 443 |
+| Pull (Demon → Viper) | **9.89 Gbit/s** | 4,171 |
+| Both directions at once | **19.70 Gbit/s** combined | 3,540 |
+
+- Both directions are at line rate, matching the original 9.91 Gbit/s, so the fabric hasn't degraded.
+- Demon sends about 10× more retransmits than Viper. That's still a small fraction of packets and doesn't cost throughput, but it's worth checking Demon's 10G NIC, cable and optic (open item).
+- The 1-minute-averaged "10G traffic per host" panel under-reads short phases (it peaked at ~16.5 Gbit/s during the bidirectional phase). The "10G live" panel uses per-scrape rates and shows the plateaus at full height.
+
 ## SMB storage throughput: 1G vs 10G
 
 The music library share (`//10.10.10.100/srt3`, Ryzenous `E:`) was measured from Demon's Proxmox host. The same share was mounted over each path with identical options, and each figure averages 3 runs of 1 GB with caches dropped. Reads used incompressible random data.
@@ -88,3 +102,5 @@ The router's built-in IoT network (`br-iot`, Wi-Fi `currynet-iot`, 2.4 GHz) is a
 | `.100–.249` | DHCP pool | anything here hasn't been catalogued yet |
 
 Router script with backup and undo: [`config/router/router-iot.sh`](../config/router/router-iot.sh).
+
+**Gotcha (2026-10-16):** the Home Assistant VM had a second NIC (`enp6s19`) with a static `192.168.10.221/24` left over from earlier. So HA treated the whole IoT subnet as directly attached, sent its traffic out that NIC (which isn't on the IoT network), and never reached the router. The TP-Link integration failed with `Errno 113` (no route to host) and kept asking for cloud credentials, and the HS300 sensors went unavailable from 22:16 on Oct 15. The router's connection table showed no HA traffic to `.10.10` at all, which pointed at HA itself. The fix was to disable IPv4 on `enp6s19` (HA → Settings → System → Network) and reload the integration. **Before moving devices to a new subnet, check that no host already has an address in it.**

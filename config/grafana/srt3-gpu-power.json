@@ -2474,6 +2474,660 @@
     "type": "prometheus",
     "uid": "ffzw4kaxny6f4c"
    }
+  },
+  {
+   "id": 20,
+   "type": "row",
+   "title": "Energy (the strip's own kWh meters)",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 47,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "type": "stat",
+   "title": "Strip today",
+   "description": "kWh since midnight, counted by the HS300 itself, so it's complete even if monitoring was down.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "kwatth",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 2
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "area",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(hass_sensor_energy_kwh{entity=\"sensor.living_room_hs300_main_today_s_consumption\"})",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 21,
+   "gridPos": {
+    "x": 0,
+    "y": 48,
+    "w": 5,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Today's cost",
+   "description": "Strip kWh today x $0.45.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "currencyUSD",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 2
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "area",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(hass_sensor_energy_kwh{entity=\"sensor.living_room_hs300_main_today_s_consumption\"}) * scalar(srt3:electricity_rate:usd_per_kwh)",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 22,
+   "gridPos": {
+    "x": 5,
+    "y": 48,
+    "w": 5,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Strip this month",
+   "description": "kWh since the 1st, from the strip.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "kwatth",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 1
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "area",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(hass_sensor_energy_kwh{entity=\"sensor.living_room_hs300_main_this_month_s_consumption\"})",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 23,
+   "gridPos": {
+    "x": 10,
+    "y": 48,
+    "w": 5,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Month so far $",
+   "description": "Strip kWh this month x $0.45.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "currencyUSD",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 40
+       },
+       {
+        "color": "red",
+        "value": 80
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 2
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "area",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(hass_sensor_energy_kwh{entity=\"sensor.living_room_hs300_main_this_month_s_consumption\"}) * scalar(srt3:electricity_rate:usd_per_kwh)",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 24,
+   "gridPos": {
+    "x": 15,
+    "y": 48,
+    "w": 5,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Cluster share today",
+   "description": "Viper + Hellcat + Demon as a share of the whole strip today.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "area",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sum(max by (entity) (hass_sensor_energy_kwh{entity=~\"sensor\\\\.living_room_hs300_plug\\\\d_(viper|hellcat|demon)_today_s_consumption\"})) / max(hass_sensor_energy_kwh{entity=\"sensor.living_room_hs300_main_today_s_consumption\"})",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 25,
+   "gridPos": {
+    "x": 20,
+    "y": 48,
+    "w": 4,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "bargauge",
+   "title": "Today per outlet",
+   "description": "kWh since midnight.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "kwatth",
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 2
+    },
+    "overrides": []
+   },
+   "options": {
+    "displayMode": "basic",
+    "orientation": "horizontal",
+    "showUnfilled": true,
+    "valueMode": "color",
+    "namePlacement": "left",
+    "sizing": "auto",
+    "minVizHeight": 16,
+    "maxVizHeight": 28,
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "label_replace(max by (entity) (hass_sensor_energy_kwh{entity=~\"sensor\\\\.living_room_hs300_plug\\\\d_.+_today_s_consumption\"}), \"device\", \"$1\", \"entity\", \"sensor\\\\.living_room_hs300_plug\\\\d_(.+)_today_s_consumption\")",
+     "legendFormat": "{{device}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false
+    }
+   ],
+   "id": 26,
+   "gridPos": {
+    "x": 0,
+    "y": 52,
+    "w": 8,
+    "h": 9
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "bargauge",
+   "title": "This month per outlet",
+   "description": "kWh since the 1st.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "kwatth",
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 1
+    },
+    "overrides": []
+   },
+   "options": {
+    "displayMode": "basic",
+    "orientation": "horizontal",
+    "showUnfilled": true,
+    "valueMode": "color",
+    "namePlacement": "left",
+    "sizing": "auto",
+    "minVizHeight": 16,
+    "maxVizHeight": 28,
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "label_replace(max by (entity) (hass_sensor_energy_kwh{entity=~\"sensor\\\\.living_room_hs300_plug\\\\d_.+_this_month_s_consumption\"}), \"device\", \"$1\", \"entity\", \"sensor\\\\.living_room_hs300_plug\\\\d_(.+)_this_month_s_consumption\")",
+     "legendFormat": "{{device}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false
+    }
+   ],
+   "id": 27,
+   "gridPos": {
+    "x": 8,
+    "y": 52,
+    "w": 8,
+    "h": 9
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "timeseries",
+   "title": "Daily running total per outlet (resets at midnight)",
+   "description": "Each day climbs from 0 at midnight; the peak just before the drop is that day's total. Last 7 days.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "kwatth",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 1,
+      "fillOpacity": 40,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "normal",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "label_replace(max by (entity) (hass_sensor_energy_kwh{entity=~\"sensor\\\\.living_room_hs300_plug\\\\d_.+_today_s_consumption\"}), \"device\", \"$1\", \"entity\", \"sensor\\\\.living_room_hs300_plug\\\\d_(.+)_today_s_consumption\")",
+     "legendFormat": "{{device}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "timeFrom": "7d",
+   "id": 28,
+   "gridPos": {
+    "x": 16,
+    "y": 52,
+    "w": 8,
+    "h": 9
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
   }
  ]
 }

@@ -1182,13 +1182,416 @@
    }
   },
   {
+   "type": "timeseries",
+   "title": "10G live (every scrape, for benchmarks)",
+   "description": "Raw per-scrape rate (15 s steps), not the 1-minute average above, so short iperf3 phases show at full height.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bps",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 15,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "stepAfter",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sum by (node) ((irate(node_network_receive_bytes_total{job=\"node\"}[1m]) + irate(node_network_transmit_bytes_total{job=\"node\"}[1m])) * 8 and on (node, device) (srt3:nic_speed:bps >= 1e10))",
+     "legendFormat": "{{node}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "interval": "15s"
+    }
+   ],
    "id": 9,
+   "gridPos": {
+    "x": 0,
+    "y": 27,
+    "w": 10,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "bargauge",
+   "title": "Last iperf3 run (Viper - Demon)",
+   "description": "push = Viper to Demon, pull = Demon to Viper, bidir = both at once (max 20). Rerun on Viper: systemd-run --unit=srt3-iperf --collect /root/srt3-iperf.sh",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "Gbits",
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "red",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 8
+       },
+       {
+        "color": "green",
+        "value": 9.5
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "max": 20,
+     "decimals": 2
+    },
+    "overrides": []
+   },
+   "options": {
+    "displayMode": "basic",
+    "orientation": "horizontal",
+    "showUnfilled": true,
+    "valueMode": "color",
+    "namePlacement": "left",
+    "sizing": "auto",
+    "minVizHeight": 16,
+    "maxVizHeight": 28,
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3_iperf_gbps",
+     "legendFormat": "{{test}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false
+    }
+   ],
+   "id": 10,
+   "gridPos": {
+    "x": 10,
+    "y": 27,
+    "w": 6,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "bargauge",
+   "title": "Retransmits (last run)",
+   "description": "TCP resends during each 45 s phase. Hundreds to a few thousand at 10G is normal; tens of thousands means a bad cable, optic or NIC.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 10000
+       },
+       {
+        "color": "red",
+        "value": 50000
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "displayMode": "basic",
+    "orientation": "horizontal",
+    "showUnfilled": true,
+    "valueMode": "color",
+    "namePlacement": "left",
+    "sizing": "auto",
+    "minVizHeight": 16,
+    "maxVizHeight": 28,
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "srt3_iperf_retransmits",
+     "legendFormat": "{{test}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false
+    }
+   ],
+   "id": 11,
+   "gridPos": {
+    "x": 16,
+    "y": 27,
+    "w": 4,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Last benchmark",
+   "description": "When the last iperf3 run finished.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "dateTimeFromNow",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(srt3_iperf_last_run_timestamp_seconds) * 1000",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false
+    }
+   ],
+   "id": 12,
+   "gridPos": {
+    "x": 20,
+    "y": 27,
+    "w": 4,
+    "h": 8
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "id": 13,
    "type": "row",
    "title": "NICs on $node",
    "collapsed": false,
    "gridPos": {
     "x": 0,
-    "y": 27,
+    "y": 35,
     "w": 24,
     "h": 1
    },
@@ -1394,10 +1797,10 @@
      }
     }
    ],
-   "id": 10,
+   "id": 14,
    "gridPos": {
     "x": 0,
-    "y": 28,
+    "y": 36,
     "w": 12,
     "h": 8
    },
@@ -1469,10 +1872,10 @@
      "range": false
     }
    ],
-   "id": 11,
+   "id": 15,
    "gridPos": {
     "x": 12,
-    "y": 28,
+    "y": 36,
     "w": 6,
     "h": 8
    },
@@ -1656,10 +2059,10 @@
      }
     }
    ],
-   "id": 12,
+   "id": 16,
    "gridPos": {
     "x": 18,
-    "y": 28,
+    "y": 36,
     "w": 6,
     "h": 8
    },
@@ -1669,13 +2072,13 @@
    }
   },
   {
-   "id": 13,
+   "id": 17,
    "type": "row",
    "title": "All physical interfaces",
    "collapsed": false,
    "gridPos": {
     "x": 0,
-    "y": 36,
+    "y": 44,
     "w": 24,
     "h": 1
    },
@@ -1947,10 +2350,10 @@
      "format": "table"
     }
    ],
-   "id": 14,
+   "id": 18,
    "gridPos": {
     "x": 0,
-    "y": 37,
+    "y": 45,
     "w": 24,
     "h": 7
    },
@@ -1960,13 +2363,13 @@
    }
   },
   {
-   "id": 15,
+   "id": 19,
    "type": "row",
    "title": "Router - GL.iNet Flint 2  (needs the optional router step)",
    "collapsed": false,
    "gridPos": {
     "x": 0,
-    "y": 44,
+    "y": 52,
     "w": 24,
     "h": 1
    },
@@ -2171,10 +2574,10 @@
      }
     }
    ],
-   "id": 16,
+   "id": 20,
    "gridPos": {
     "x": 0,
-    "y": 45,
+    "y": 53,
     "w": 16,
     "h": 8
    },
@@ -2254,10 +2657,10 @@
      }
     }
    ],
-   "id": 17,
+   "id": 21,
    "gridPos": {
     "x": 16,
-    "y": 45,
+    "y": 53,
     "w": 8,
     "h": 4
    },
@@ -2317,10 +2720,10 @@
      }
     }
    ],
-   "id": 18,
+   "id": 22,
    "gridPos": {
     "x": 16,
-    "y": 49,
+    "y": 57,
     "w": 8,
     "h": 4
    },
@@ -2330,13 +2733,1018 @@
    }
   },
   {
-   "id": 19,
+   "id": 23,
+   "type": "row",
+   "title": "DNS - AdGuard Home (on the Flint 2)",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 61,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "type": "stat",
+   "title": "Queries (24h)",
+   "description": "DNS lookups from every device in AdGuard's 24h window.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sum(adguard_queries)",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 24,
+   "gridPos": {
+    "x": 0,
+    "y": 62,
+    "w": 4,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Blocked (24h)",
+   "description": "Ads, trackers, malware.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sum(adguard_blocked)",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 25,
+   "gridPos": {
+    "x": 4,
+    "y": 62,
+    "w": 4,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Blocked %",
+   "description": "",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 1
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sum(adguard_blocked) / sum(adguard_queries)",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 26,
+   "gridPos": {
+    "x": 8,
+    "y": 62,
+    "w": 4,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Malware blocked",
+   "description": "Safe-browsing hits: a device tried a known-bad domain.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 1
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "background",
+    "graphMode": "none",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sum(adguard_blocked_malware)",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 27,
+   "gridPos": {
+    "x": 12,
+    "y": 62,
+    "w": 4,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Avg lookup time",
+   "description": "AdGuard's average processing time per query.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 0.05
+       },
+       {
+        "color": "red",
+        "value": 0.2
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 1
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(adguard_avg_processing_seconds)",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 28,
+   "gridPos": {
+    "x": 16,
+    "y": 62,
+    "w": 4,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Protection",
+   "description": "Filtering on/off. 'down' = Hellcat can't reach the AdGuard API.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "red",
+        "value": null
+       },
+       {
+        "color": "green",
+        "value": 1
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 1,
+     "mappings": [
+      {
+       "type": "value",
+       "options": {
+        "0": {
+         "text": "OFF",
+         "index": 0
+        },
+        "1": {
+         "text": "ON",
+         "index": 1
+        }
+       }
+      }
+     ],
+     "noValue": "down"
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "background",
+    "graphMode": "none",
+    "textMode": "auto",
+    "justifyMode": "center",
+    "orientation": "auto",
+    "wideLayout": true,
+    "showPercentChange": false
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(adguard_protection_enabled)",
+     "legendFormat": "",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 29,
+   "gridPos": {
+    "x": 20,
+    "y": 62,
+    "w": 4,
+    "h": 4
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "timeseries",
+   "title": "Blocked % over time",
+   "description": "Rolling 24h block rate. A sudden jump can mean a device started phoning home a lot.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 10,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     },
+     "min": 0
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sum(adguard_blocked) / sum(adguard_queries)",
+     "legendFormat": "blocked share (24h window)",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 30,
+   "gridPos": {
+    "x": 0,
+    "y": 66,
+    "w": 12,
+    "h": 7
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "timeseries",
+   "title": "Queries in the latest hour",
+   "description": "AdGuard's current hourly bucket.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 10,
+      "gradientMode": "opacity",
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "lineInterpolation": "smooth",
+      "axisBorderShow": false,
+      "axisSoftMin": 0,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "color": {
+      "mode": "palette-classic"
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^viper( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#3987e5"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^hellcat( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d95926"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^demon( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#199e70"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^ryzenous( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#c98500"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^flint2( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#d55181"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^tv( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#9085e9"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^soundbar( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#e66767"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^xbox( .*)?$"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "#008300"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "max"
+     ],
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(adguard_queries_last_hour)",
+     "legendFormat": "queries",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    },
+    {
+     "refId": "B",
+     "expr": "max(adguard_blocked_last_hour)",
+     "legendFormat": "blocked",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     }
+    }
+   ],
+   "id": 31,
+   "gridPos": {
+    "x": 12,
+    "y": 66,
+    "w": 12,
+    "h": 7
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "bargauge",
+   "title": "Top clients (24h)",
+   "description": "Which devices make the most DNS lookups. IoT devices showing up high here are worth a look.",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "displayMode": "basic",
+    "orientation": "horizontal",
+    "showUnfilled": true,
+    "valueMode": "color",
+    "namePlacement": "left",
+    "sizing": "auto",
+    "minVizHeight": 16,
+    "maxVizHeight": 28,
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "topk(12, adguard_top_client_queries)",
+     "legendFormat": "{{name}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false
+    }
+   ],
+   "id": 32,
+   "gridPos": {
+    "x": 0,
+    "y": 73,
+    "w": 8,
+    "h": 10
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "bargauge",
+   "title": "Top blocked domains (24h)",
+   "description": "",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "displayMode": "basic",
+    "orientation": "horizontal",
+    "showUnfilled": true,
+    "valueMode": "color",
+    "namePlacement": "left",
+    "sizing": "auto",
+    "minVizHeight": 16,
+    "maxVizHeight": 28,
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "topk(12, adguard_top_blocked_domain_queries)",
+     "legendFormat": "{{domain}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false
+    }
+   ],
+   "id": 33,
+   "gridPos": {
+    "x": 8,
+    "y": 73,
+    "w": 8,
+    "h": 10
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "type": "bargauge",
+   "title": "Top queried domains (24h)",
+   "description": "",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "displayMode": "basic",
+    "orientation": "horizontal",
+    "showUnfilled": true,
+    "valueMode": "color",
+    "namePlacement": "left",
+    "sizing": "auto",
+    "minVizHeight": 16,
+    "maxVizHeight": 28,
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "topk(12, adguard_top_queried_domain_queries)",
+     "legendFormat": "{{domain}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "ffzw4kaxny6f4c"
+     },
+     "instant": true,
+     "range": false
+    }
+   ],
+   "id": 34,
+   "gridPos": {
+    "x": 16,
+    "y": 73,
+    "w": 8,
+    "h": 10
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "ffzw4kaxny6f4c"
+   }
+  },
+  {
+   "id": 35,
    "type": "row",
    "title": "Services",
    "collapsed": false,
    "gridPos": {
     "x": 0,
-    "y": 53,
+    "y": 83,
     "w": 24,
     "h": 1
    },
@@ -2521,10 +3929,10 @@
      }
     }
    ],
-   "id": 20,
+   "id": 36,
    "gridPos": {
     "x": 0,
-    "y": 54,
+    "y": 84,
     "w": 12,
     "h": 8
    },
@@ -2731,10 +4139,10 @@
      "format": "table"
     }
    ],
-   "id": 21,
+   "id": 37,
    "gridPos": {
     "x": 12,
-    "y": 54,
+    "y": 84,
     "w": 12,
     "h": 8
    },
